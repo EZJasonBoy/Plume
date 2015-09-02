@@ -8,27 +8,39 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.Toast;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.ButterKnife;
 import rx.Observable;
+import sausure.io.personallibrary.Base.LogicAgent;
 import sausure.io.personallibrary.Base.TransitionMode;
+import sausure.io.personallibrary.Base.impl.LogicAgentImpl;
 import sausure.io.personallibrary.R;
 import sausure.io.personallibrary.Utils.NetUtil;
 
 /**
  * Created by JOJO on 2015/9/1.
  */
-public abstract class BaseAppCompatActivity extends AppCompatActivity
+public abstract class BaseAppCompatActivity extends AppCompatActivity implements LogicAgent
 {
+    /**
+     * Activity Tool Bar，remember to bind!!
+     */
+//    @Bind(R.id.toolbar)
+    @Nullable
+    public Toolbar toolbar;
+
     /**
      * Log tag
      */
@@ -44,25 +56,46 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      */
     protected BroadcastReceiver NetReceiver;
 
+    /**
+     * put common methods into agent
+     */
+    private LogicAgent agent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
         context = this;
+        agent = new LogicAgentImpl<>(context);
         TAG_LOG = getClass().getSimpleName();
         overridePendingTransition();
         getBundleExtras();
         setContentView(getLayoutResId());
         setStatusBarTranslucent(true);
         bindNetChangeListener();
+        initializeAllView();
     }
 
     @Override
-    public void setContentView(View view)
+    public void setContentView(int layoutResID)
     {
-        super.setContentView(view);
+        if(layoutResID == 0)
+            throw new IllegalArgumentException("You must return a right contentView layout resource Id");
+
+        super.setContentView(layoutResID);
         ButterKnife.bind(context);
+
+        if(toolbar != null)
+        {
+            setSupportActionBar(toolbar);
+
+            if(canSwipeBack())
+                Observable.just(getSupportActionBar())
+                    .filter(actionBar -> actionBar != null)
+                    .doOnNext(actionBar -> actionBar.setHomeButtonEnabled(true))
+                    .subscribe(actionBar ->actionBar.setDisplayHomeAsUpEnabled(true));
+        }
     }
 
     @Override
@@ -91,6 +124,54 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
         ButterKnife.unbind(this);
         LocalBroadcastManager.getInstance(context).unregisterReceiver(NetReceiver);
         context = null;
+    }
+
+    @Override
+    public void readyGo(Class<?> clazz)
+    {
+        agent.readyGo(clazz);
+    }
+
+    @Override
+    public void readyGo(Class<?> clazz, Bundle bundle)
+    {
+        agent.readyGo(clazz, bundle);
+    }
+
+    @Override
+    public void readyGoForResult(Class<?> clazz, int requestCode)
+    {
+        agent.readyGoForResult(clazz, requestCode);
+    }
+
+    @Override
+    public void readyGoForResult(Class<?> clazz, int requestCode, Bundle bundle)
+    {
+        agent.readyGoForResult(clazz, requestCode, bundle);
+    }
+
+    /**
+     * when user click toolbar,scrollView can scroll to top quickly
+     * @param scrollView
+     * @param <S>
+     */
+    public <S> void scrollToTopQuickly(S scrollView)
+    {
+        try
+        {
+            if (toolbar != null)
+            {
+                if (scrollView instanceof AbsListView)
+                    toolbar.setOnClickListener(view -> ((AbsListView) scrollView).smoothScrollToPosition(0));
+                else if(scrollView instanceof RecyclerView)
+                    toolbar.setOnClickListener(view -> ((RecyclerView)scrollView).smoothScrollToPosition(0));
+            }
+        }
+        catch (Exception e)
+        {
+            //sorry,it does not work
+            throw new RuntimeException("sorry,it can not smooth scroll to top");
+        }
     }
 
     /**
@@ -210,6 +291,15 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     }
 
     /**
+     * this activity can swipe back(I wil implement own swipe back mechanism)
+     * @return
+     */
+    protected boolean canSwipeBack()
+    {
+        return false;
+    }
+
+    /**
      * whether you want to monitor network change
      * @return
      */
@@ -251,4 +341,9 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      * @return
      */
     protected abstract int getLayoutResId();
+
+    /**
+     * you should initialize all view in this method
+     */
+    protected abstract void initializeAllView();
 }
