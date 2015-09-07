@@ -1,40 +1,41 @@
 package sausure.io.personallibrary.Activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Handler;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
-import android.widget.Toast;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.ButterKnife;
 import rx.Observable;
+import sausure.io.personallibrary.Broadcast.NetMonitor;
+import sausure.io.personallibrary.Enum.NetState;
 import sausure.io.personallibrary.Enum.TransitionMode;
-import sausure.io.personallibrary.Helper.BindNetChangeHelper;
-import sausure.io.personallibrary.Helper.StartComponentHelper;
-import sausure.io.personallibrary.Helper.impl.BindNetChangeHelperImpl;
-import sausure.io.personallibrary.Helper.impl.StartComponentHelperImpl;
 import sausure.io.personallibrary.R;
+import sausure.io.personallibrary.Utils.ActivityUtil;
 
 /**
  * Created by JOJO on 2015/9/1.
  */
 public abstract class BaseAppCompatActivity extends AppCompatActivity
-        implements BindNetChangeHelperImpl.HandleNetChangeListener
+        implements NetMonitor.HandleNetChangeListener
 {
     /**
      * Activity Tool Bar
      */
-//    @Bind(R.id.toolbar)
     public Toolbar toolbar;
 
     /**
@@ -48,19 +49,19 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     protected Activity context;
 
     /**
-     * monitor net change
+     * root view
      */
-    protected BroadcastReceiver netReceiver;
+    protected View contentView;
 
     /**
-     * put start component common methods into startComponentHelper
+     * whether can finish
      */
-    private StartComponentHelper startComponentHelper;
+    private boolean canFinish = false;
 
     /**
-     * put net change monitor into bindNetChangeAgent
+     * post delay runnable
      */
-    private BindNetChangeHelper bindNetChangeHelper;
+    private Runnable toggleFinish = ()-> canFinish = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -69,14 +70,16 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
 
         context = this;
         TAG_LOG = getClass().getSimpleName();
+
         overridePendingTransition();
         getBundleExtras();
         setContentView(getLayoutResId());
         setStatusBarTranslucent();
         setStatusBarColor();
-        startComponentHelper = new StartComponentHelperImpl<>(this);
-        bindNetChangeHelper = new BindNetChangeHelperImpl(this,this);
-        netReceiver = bindNetChangeHelper.bindNetChangeListener();
+
+        if(monitorNetWork())
+            NetMonitor.registerNetworkMonitor(this);
+
         onActivityCreated();
     }
 
@@ -88,7 +91,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
 
         super.setContentView(layoutResID);
         ButterKnife.bind(this);
-
+        contentView = ButterKnife.findById(this, android.R.id.content);
         toolbar = ButterKnife.findById(this,R.id.toolbar);
         if(toolbar != null)
         {
@@ -122,25 +125,79 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(event.getKeyCode() == KeyEvent.KEYCODE_BACK && doubleClickFinish())
+            return handleDoubleBackClick();
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     protected void onDestroy()
     {
         super.onDestroy();
         ButterKnife.unbind(this);
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(netReceiver);
+
+        if(monitorNetWork())
+            NetMonitor.unRegisterNetworkMonitor(this);
+
         context = null;
+        contentView = null;
     }
 
-    @Override
-    public boolean needNetWork()
+    /**
+     * whether you want to monitor network change
+     * @return
+     */
+    protected boolean monitorNetWork()
     {
         return false;
     }
 
     @Override
-    public void handleConnectivityChange(boolean isAvailable)
+    public void handleConnectivityChange(NetState netState)
     {
-        if(!isAvailable)
-            Toast.makeText(context, R.string.network_offline, Toast.LENGTH_SHORT).show();
+        if(netState == NetState.NONE)
+            getSnackbar().show();
+    }
+
+    /**
+     * bind action to Network setting
+     * @return
+     */
+    private Snackbar getSnackbar()
+    {
+        Snackbar bar = Snackbar.make(contentView, R.string.network_offline, Snackbar.LENGTH_SHORT);
+        bar.setAction(R.string.toggleNetwork,(view -> startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS))));
+        return bar;
+    }
+
+    /**
+     * handle KEYCODE_BACK
+     * @return
+     */
+    private boolean handleDoubleBackClick()
+    {
+        if(!canFinish)
+        {
+            canFinish = true;
+            Snackbar.make(contentView,getString(R.string.finish_tip),Snackbar.LENGTH_SHORT).show();
+            new Handler().postDelayed(toggleFinish,2000);
+        }
+        else
+            finish();
+
+        return true;
+    }
+
+    /**
+     * whether this activity is in the bottom
+     * @return
+     */
+    protected boolean doubleClickFinish()
+    {
+        return false;
     }
 
     /**
@@ -149,7 +206,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      */
     public void startActivity(Class<?> clazz)
     {
-        startComponentHelper.readyGo(clazz);
+        ActivityUtil.readyGo(this,clazz);
     }
 
     /**
@@ -159,7 +216,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      */
     public void startActivity(Class<?> clazz, Bundle bundle)
     {
-        startComponentHelper.readyGo(clazz, bundle);
+        ActivityUtil.readyGo(this,clazz, bundle);
     }
 
     /**
@@ -169,18 +226,18 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      */
     public void startActivity(Class<?> clazz, int requestCode)
     {
-        startComponentHelper.readyGoForResult(clazz, requestCode);
+        ActivityUtil.readyGoForResult(this, clazz, requestCode);
     }
 
     /**
      * convenient way to start activity
      * @param clazz
-     * @param requestCode
      * @param bundle
+     * @param requestCode
      */
-    public void startActivity(Class<?> clazz, int requestCode, Bundle bundle)
+    public void startActivity(Class<?> clazz,Bundle bundle,int requestCode)
     {
-        startComponentHelper.readyGoForResult(clazz, requestCode, bundle);
+        ActivityUtil.readyGoForResult(this,clazz,bundle, requestCode);
     }
 
     /**
@@ -189,7 +246,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      */
     public void startActivityBeforeFinish(Class<?> clazz)
     {
-        startComponentHelper.readyGo(clazz, true);
+        ActivityUtil.readyGo(this,clazz, true);
     }
 
     /**
@@ -199,7 +256,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      */
     public void startActivityBeforeFinish(Class<?> clazz,Bundle bundle)
     {
-        startComponentHelper.readyGo(clazz,bundle,true);
+        ActivityUtil.readyGo(this,clazz,bundle,true);
     }
 
     /**
@@ -273,7 +330,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
                     break;
 
                 default:
-                    break;
+                    throw new IllegalArgumentException("you should choose the given animation");
             }
         }
     }
@@ -293,16 +350,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
             else
                 winParams.flags &= ~bits;
         }
-
-//        Observable.just(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-//                .filter(compatible -> compatible)
-//                .map(compatible -> getWindow().getAttributes())
-//                .subscribe(layoutParams -> {
-//                    if (statusBarNeedTranslucent())
-//                        layoutParams.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-//                    else
-//                        layoutParams.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-//                });
     }
 
     /**

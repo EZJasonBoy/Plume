@@ -1,6 +1,7 @@
 package sausure.io.plume.Activity;
 
 import android.graphics.Bitmap;
+import android.view.KeyEvent;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
@@ -64,5 +65,14 @@ public class SplashActivity extends BaseActivity implements SplashPresenter.Spla
     public void navigateToHomeActivity()
     {
         startActivityBeforeFinish(MainActivity.class);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(event.getKeyCode() == KeyEvent.KEYCODE_BACK)
+            return true;
+
+        return super.onKeyDown(keyCode, event);
     }
 }
