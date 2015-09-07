@@ -11,7 +11,7 @@
 >[SmartTabLayout](https://github.com/ogaclejapan/SmartTabLayout)`标签页`<br/>
 >[SwipeBackLayout](https://github.com/ikew0ng/SwipeBackLayout)`滑动返回` `可能抛弃`<br/>
 >[Picasso](https://github.com/square/picasso)`图片加载`<br/>
->[Retrofit](https://github.com/square/retrofit)`网络请求`<br/>
+>[Retrofit](https://github.com/square/retrofit)?[~~OkHttp~~](https://github.com/square/okhttp)`网络请求`<br/>
 >[Realm](https://github.com/realm/realm-java)`数据库`<br/>
 >[Umeng](http://www.umeng.com/)`统计` `待加入`<br/>
 

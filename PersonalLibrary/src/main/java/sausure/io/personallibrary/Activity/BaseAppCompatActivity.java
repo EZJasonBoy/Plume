@@ -2,13 +2,8 @@ package sausure.io.personallibrary.Activity;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -23,22 +18,23 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.ButterKnife;
 import rx.Observable;
-import sausure.io.personallibrary.Base.LogicAgent;
-import sausure.io.personallibrary.Base.TransitionMode;
-import sausure.io.personallibrary.Base.impl.LogicAgentImpl;
+import sausure.io.personallibrary.Enum.TransitionMode;
+import sausure.io.personallibrary.Helper.BindNetChangeHelper;
+import sausure.io.personallibrary.Helper.StartComponentHelper;
+import sausure.io.personallibrary.Helper.impl.BindNetChangeHelperImpl;
+import sausure.io.personallibrary.Helper.impl.StartComponentHelperImpl;
 import sausure.io.personallibrary.R;
-import sausure.io.personallibrary.Utils.NetUtil;
 
 /**
  * Created by JOJO on 2015/9/1.
  */
-public abstract class BaseAppCompatActivity extends AppCompatActivity implements LogicAgent
+public abstract class BaseAppCompatActivity extends AppCompatActivity
+        implements BindNetChangeHelperImpl.HandleNetChangeListener
 {
     /**
-     * Activity Tool Bar，remember to bind!!
+     * Activity Tool Bar
      */
 //    @Bind(R.id.toolbar)
-    @Nullable
     public Toolbar toolbar;
 
     /**
@@ -54,12 +50,17 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     /**
      * monitor net change
      */
-    protected BroadcastReceiver NetReceiver;
+    protected BroadcastReceiver netReceiver;
 
     /**
-     * put common methods into agent
+     * put start component common methods into startComponentHelper
      */
-    private LogicAgent agent;
+    private StartComponentHelper startComponentHelper;
+
+    /**
+     * put net change monitor into bindNetChangeAgent
+     */
+    private BindNetChangeHelper bindNetChangeHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,14 +68,16 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         context = this;
-        agent = new LogicAgentImpl<>(context);
         TAG_LOG = getClass().getSimpleName();
         overridePendingTransition();
         getBundleExtras();
         setContentView(getLayoutResId());
-        setStatusBarTranslucent(true);
-        bindNetChangeListener();
-        initializeAllView();
+        setStatusBarTranslucent();
+        setStatusBarColor();
+        startComponentHelper = new StartComponentHelperImpl<>(this);
+        bindNetChangeHelper = new BindNetChangeHelperImpl(this,this);
+        netReceiver = bindNetChangeHelper.bindNetChangeListener();
+        onActivityCreated();
     }
 
     @Override
@@ -84,13 +87,14 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             throw new IllegalArgumentException("You must return a right contentView layout resource Id");
 
         super.setContentView(layoutResID);
-        ButterKnife.bind(context);
+        ButterKnife.bind(this);
 
+        toolbar = ButterKnife.findById(this,R.id.toolbar);
         if(toolbar != null)
         {
             setSupportActionBar(toolbar);
 
-            if(canSwipeBack())
+            if(canNaviBack())
                 Observable.just(getSupportActionBar())
                     .filter(actionBar -> actionBar != null)
                     .doOnNext(actionBar -> actionBar.setHomeButtonEnabled(true))
@@ -122,32 +126,80 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     {
         super.onDestroy();
         ButterKnife.unbind(this);
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(NetReceiver);
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(netReceiver);
         context = null;
     }
 
     @Override
-    public void readyGo(Class<?> clazz)
+    public boolean needNetWork()
     {
-        agent.readyGo(clazz);
+        return false;
     }
 
     @Override
-    public void readyGo(Class<?> clazz, Bundle bundle)
+    public void handleConnectivityChange(boolean isAvailable)
     {
-        agent.readyGo(clazz, bundle);
+        if(!isAvailable)
+            Toast.makeText(context, R.string.network_offline, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void readyGoForResult(Class<?> clazz, int requestCode)
+    /**
+     * convenient way to start activity
+     * @param clazz
+     */
+    public void startActivity(Class<?> clazz)
     {
-        agent.readyGoForResult(clazz, requestCode);
+        startComponentHelper.readyGo(clazz);
     }
 
-    @Override
-    public void readyGoForResult(Class<?> clazz, int requestCode, Bundle bundle)
+    /**
+     * convenient way to start activity
+     * @param clazz
+     * @param bundle
+     */
+    public void startActivity(Class<?> clazz, Bundle bundle)
     {
-        agent.readyGoForResult(clazz, requestCode, bundle);
+        startComponentHelper.readyGo(clazz, bundle);
+    }
+
+    /**
+     * convenient way to start activity
+     * @param clazz
+     * @param requestCode
+     */
+    public void startActivity(Class<?> clazz, int requestCode)
+    {
+        startComponentHelper.readyGoForResult(clazz, requestCode);
+    }
+
+    /**
+     * convenient way to start activity
+     * @param clazz
+     * @param requestCode
+     * @param bundle
+     */
+    public void startActivity(Class<?> clazz, int requestCode, Bundle bundle)
+    {
+        startComponentHelper.readyGoForResult(clazz, requestCode, bundle);
+    }
+
+    /**
+     * start activity before finish
+     * @param clazz
+     */
+    public void startActivityBeforeFinish(Class<?> clazz)
+    {
+        startComponentHelper.readyGo(clazz, true);
+    }
+
+    /**
+     * start activity before finish
+     * @param clazz
+     * @param bundle
+     */
+    public void startActivityBeforeFinish(Class<?> clazz,Bundle bundle)
+    {
+        startComponentHelper.readyGo(clazz,bundle,true);
     }
 
     /**
@@ -227,55 +279,49 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     }
 
     /**
-     * monitor network change
+     * set status bar to be translucent
      */
-    private void bindNetChangeListener()
-    {
-        if(needNetWork())
-        {
-            if(NetReceiver == null)
-                NetReceiver = new BroadcastReceiver()
-                {
-                    @Override
-                    public void onReceive(Context context, Intent intent)
-                    {
-                        Observable.just(intent.getAction())
-                                .filter(action -> action.equals(ConnectivityManager.CONNECTIVITY_ACTION))
-                                .map(filter -> NetUtil.isNetworkAvailable(context))
-                                .subscribe(isAvailable -> handleConnectivityChange(isAvailable));
-                    }
-                };
-            LocalBroadcastManager.getInstance(context).registerReceiver(NetReceiver,
-                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        }
-    }
-
-    /**
-     * set status bar translucent
-     * @param on
-     */
-    protected void setStatusBarTranslucent(boolean on)
+    private void setStatusBarTranslucent()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
         {
             Window win = getWindow();
             WindowManager.LayoutParams winParams = win.getAttributes();
             final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-            if (on)
+            if (statusBarNeedTranslucent())
                 winParams.flags |= bits;
             else
                 winParams.flags &= ~bits;
         }
+
+//        Observable.just(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+//                .filter(compatible -> compatible)
+//                .map(compatible -> getWindow().getAttributes())
+//                .subscribe(layoutParams -> {
+//                    if (statusBarNeedTranslucent())
+//                        layoutParams.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+//                    else
+//                        layoutParams.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+//                });
     }
 
     /**
-     * use tintColor to draw status bar's background
-     * @param tintColor
+     * whether status bar needs to be translucent
+     * @return
      */
-    protected void setStatusBarColor(int tintColor)
+    protected boolean statusBarNeedTranslucent()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        return false;
+    }
+
+    /**
+     * set status bar's background to target color which return from getStatusBarColor()
+     */
+    private void setStatusBarColor()
+    {
+        try
         {
+            int tintColor = getStatusBarColor();
             SystemBarTintManager mTintManager = new SystemBarTintManager(this);
             if (tintColor != 0)
             {
@@ -288,22 +334,26 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
                 mTintManager.setTintDrawable(null);
             }
         }
+        catch (Exception e)
+        {
+            throw new IllegalArgumentException("unable to set status bar to target color");
+        }
     }
 
     /**
-     * this activity can swipe back(I wil implement own swipe back mechanism)
+     * return the status bar background color
      * @return
      */
-    protected boolean canSwipeBack()
+    protected int getStatusBarColor()
     {
-        return false;
+        return 0;
     }
 
     /**
-     * whether you want to monitor network change
+     * this activity can finish by navigation
      * @return
      */
-    protected  boolean needNetWork()
+    protected boolean canNaviBack()
     {
         return false;
     }
@@ -327,16 +377,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     }
 
     /**
-     * show toast to remind user if network is available
-     * @param isAvailable
-     */
-    protected void handleConnectivityChange(boolean isAvailable)
-    {
-        if(!isAvailable)
-            Toast.makeText(context, R.string.network_offline,Toast.LENGTH_SHORT).show();
-    }
-
-    /**
      * get this activity's layout resource
      * @return
      */
@@ -345,5 +385,5 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     /**
      * you should initialize all view in this method
      */
-    protected abstract void initializeAllView();
+    protected abstract void onActivityCreated();
 }
