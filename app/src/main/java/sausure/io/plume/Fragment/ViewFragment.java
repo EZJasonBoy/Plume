@@ -1,6 +1,5 @@
 package sausure.io.plume.Fragment;
 
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.yalantis.phoenix.PullToRefreshView;
@@ -24,7 +23,7 @@ public class ViewFragment extends LazyFragment implements ViewPresenter.ViewView
     @Override
     protected void onFirstUserVisible()
     {
-        new ViewPresenter(this).initialized();
+        new ViewPresenter(context,this).initialized();
     }
 
     @Override
@@ -34,10 +33,11 @@ public class ViewFragment extends LazyFragment implements ViewPresenter.ViewView
     }
 
     @Override
-    public void initialList(RecyclerView.Adapter<?> adapter)
+    public void initialList(RecyclerView.LayoutManager layoutManager,RecyclerView.Adapter<?> adapter,RecyclerView.OnScrollListener onScrollListener)
     {
-        viewList.setLayoutManager(new LinearLayoutManager(context));
+        viewList.setLayoutManager(layoutManager);
         viewList.setAdapter(adapter);
+        viewList.addOnScrollListener(onScrollListener);
     }
 
     @Override

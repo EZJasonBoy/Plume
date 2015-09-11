@@ -15,6 +15,7 @@ public interface ZhiHuService
     String START_IMAGE = "1080*1776";
     String LATEST = "latest";
     String BEFORE = "before/";
+    int startDay = 20130520;
 
     /**
      * get splash activity's start image
@@ -24,7 +25,9 @@ public interface ZhiHuService
     @GET("/start-image/{img}")
     Observable<StartImage> getStartImage(@Path("img")String img);
 
-    @GET("/news/{date}")
-    Observable<ViewList> getViewList(@Path("date")String date);
+    @GET("/news/latest")
+    Observable<ViewList> getLatestViews();
 
+    @GET("/news/before/{before}")
+    Observable<ViewList> getBeforeViews(@Path("before")String before);
 }
