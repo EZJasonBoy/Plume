@@ -1,4 +1,4 @@
-package sausure.io.personallibrary.Broadcast;
+package sausure.io.personallibrary.Receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Plume</string>
+
+    <array name="category">
+        <item>@string/view</item>
+        <item>@string/news</item>
+        <item>@string/video</item>
+        <item>@string/music</item>
+        <item>@string/picture</item>
+    </array>
+
+    <string name="view">VIEW</string>
+    <string name="news">NEWS</string>
+    <string name="video">VIDEO</string>
+    <string name="music">MUSIC</string>
+    <string name="picture">PICTURE</string>
 </resources>

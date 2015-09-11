@@ -1,10 +1,10 @@
 package sausure.io.personallibrary.Utils;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 /**
  * Created by JOJO on 2015/9/7.

@@ -1,12 +1,12 @@
-package sausure.io.plume.Retrofit.Bean;
+package sausure.io.plume.Retrofit.Entity;
 
 /**
  * Created by JOJO on 2015/9/6.
  */
 public class StartImage
 {
-    public String text;
-    public String img;
+    private String text;
+    private String img;
 
     public String getText() {
         return text;

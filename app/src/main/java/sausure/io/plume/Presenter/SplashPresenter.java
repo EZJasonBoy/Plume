@@ -12,9 +12,12 @@ import retrofit.RestAdapter;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import sausure.io.plume.R;
-import sausure.io.plume.Retrofit.RequestService;
 import sausure.io.personallibrary.Utils.FileUtil;
+import sausure.io.plume.APP;
+import sausure.io.plume.R;
+import sausure.io.plume.Retrofit.DownloadService;
+import sausure.io.plume.Retrofit.Entity.StartImage;
+import sausure.io.plume.Retrofit.ZhiHuService;
 
 /**
  * Created by JOJO on 2015/9/6.
@@ -74,7 +77,7 @@ public class SplashPresenter
         public Observable<Bitmap> getBackgroundImage()
         {
             return Observable.just(targetFile)
-                    .filter(file -> file.exists())
+                    .filter(File::exists)
                     .observeOn(AndroidSchedulers.mainThread())
                     .map(file -> BitmapFactory.decodeFile(file.getAbsolutePath()));
         }
@@ -82,20 +85,16 @@ public class SplashPresenter
         @Override
         public void UpdateBackgroundImage()
         {
-            new RestAdapter
-                .Builder()
-                .setEndpoint(RequestService.ZHIHU_API)
-                .build()
-                .create(RequestService.class)
-                .getStartImage(RequestService.START_IMAGE)
+            APP.getZhiHuService()
+                .getStartImage(ZhiHuService.START_IMAGE)
                 .subscribeOn(Schedulers.io())
-                .map(startImage -> startImage.getImg())
+                .map(StartImage::getImg)
                 .flatMap(img ->
                         new RestAdapter
                                 .Builder()
                                 .setEndpoint(img.substring(0, img.lastIndexOf("/")))
                                 .build()
-                                .create(RequestService.class)
+                                .create(DownloadService.class)
                                 .downloadStartImage(img.substring(img.lastIndexOf("/") + 1)))
                 .subscribeOn(Schedulers.io())
                 .subscribe(response -> FileUtil.saveFile(targetFile, response));
@@ -111,7 +110,7 @@ public class SplashPresenter
     /**
      * interface which SplashActivity should implement
      */
-    public static interface SplashView
+    public interface SplashView
     {
         void initializeView(String copyright,Observable<Bitmap> bitmap);
 
@@ -123,7 +122,7 @@ public class SplashPresenter
     /**
      * get data from Model
      */
-    private static interface SplashModel
+    public interface SplashModel
     {
         Observable<Bitmap> getBackgroundImage();
 

@@ -24,7 +24,7 @@
 
         <activity android:name=".Activity.MainActivity"></activity>
 
-        <receiver android:name="sausure.io.personallibrary.Broadcast.NetMonitor">
+        <receiver android:name="sausure.io.personallibrary.Receiver.NetMonitor">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>

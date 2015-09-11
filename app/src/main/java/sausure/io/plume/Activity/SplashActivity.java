@@ -58,7 +58,7 @@ public class SplashActivity extends BaseActivity implements SplashPresenter.Spla
     @Override
     public void initializeView(String copyright, Observable<Bitmap> observable)
     {
-        observable.subscribe(bitmap -> startImageView.setImageBitmap(bitmap));
+        observable.subscribe(startImageView::setImageBitmap);
     }
 
     @Override

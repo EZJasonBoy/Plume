@@ -21,7 +21,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.ButterKnife;
 import rx.Observable;
-import sausure.io.personallibrary.Broadcast.NetMonitor;
+import sausure.io.personallibrary.Receiver.NetMonitor;
 import sausure.io.personallibrary.Enum.NetState;
 import sausure.io.personallibrary.Enum.TransitionMode;
 import sausure.io.personallibrary.R;
@@ -224,7 +224,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      * @param clazz
      * @param requestCode
      */
-    public void startActivity(Class<?> clazz, int requestCode)
+    public void startActivityForResult(Class<?> clazz, int requestCode)
     {
         ActivityUtil.readyGoForResult(this, clazz, requestCode);
     }
@@ -235,7 +235,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      * @param bundle
      * @param requestCode
      */
-    public void startActivity(Class<?> clazz,Bundle bundle,int requestCode)
+    public void startActivityForResult(Class<?> clazz,Bundle bundle,int requestCode)
     {
         ActivityUtil.readyGoForResult(this,clazz,bundle, requestCode);
     }
@@ -290,7 +290,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     {
         Observable.just(getIntent().getExtras())
                 .filter(extras -> extras != null)
-                .subscribe(extras -> handleBundleExtras(extras));
+                .subscribe(this::handleBundleExtras);
     }
 
     /**
