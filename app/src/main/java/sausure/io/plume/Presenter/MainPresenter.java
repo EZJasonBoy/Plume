@@ -9,14 +9,14 @@ import java.util.List;
 
 import sausure.io.personallibrary.Fragment.LazyFragment;
 import sausure.io.plume.Adapter.MainPagerAdapter;
-import sausure.io.plume.Fragment.BaseFragment;
+import sausure.io.plume.Fragment.TestFragment;
 import sausure.io.plume.Fragment.ViewFragment;
 import sausure.io.plume.R;
 
 /**
  * Created by JOJO on 2015/9/9.
  */
-public class MainPresenter
+public class MainPresenter implements Presenter
 {
     private MainView mainView;
     private MainModel mainModel;
@@ -27,6 +27,7 @@ public class MainPresenter
         this.mainModel = new MainModelImpl(activity);
     }
 
+    @Override
     public void initialized()
     {
         mainView.initializePagerViews(mainModel.getPagerAdapter());
@@ -57,7 +58,7 @@ public class MainPresenter
                         break;
 
                     default:
-                        LazyFragment test = new BaseFragment();
+                        LazyFragment test = new TestFragment();
                         test.setArguments(getBundle(category[i]));
                         fragments.add(test);
                 }

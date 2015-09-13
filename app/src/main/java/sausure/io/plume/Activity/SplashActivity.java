@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import butterknife.Bind;
 import rx.Observable;
 import sausure.io.personallibrary.Enum.TransitionMode;
+import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.Presenter.SplashPresenter;
 import sausure.io.plume.R;
 
@@ -32,21 +33,14 @@ public class SplashActivity extends BaseActivity implements SplashPresenter.Spla
     }
 
     @Override
-    protected boolean toggleOverridePendingTransition()
-    {
-        return true;
-    }
-
-    @Override
     protected int getStatusBarColor()
     {
         return 0;
     }
 
     @Override
-    protected void onActivityCreated()
-    {
-        new SplashPresenter(context,this).initialized();
+    protected Presenter getPresenter() {
+        return new SplashPresenter(this,this);
     }
 
     @Override
@@ -62,7 +56,7 @@ public class SplashActivity extends BaseActivity implements SplashPresenter.Spla
     }
 
     @Override
-    public void navigateToHomeActivity()
+    public void navigateToMainActivity()
     {
         startActivityBeforeFinish(MainActivity.class);
     }

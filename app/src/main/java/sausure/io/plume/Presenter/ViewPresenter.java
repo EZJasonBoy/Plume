@@ -15,9 +15,11 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import sausure.io.personallibrary.Utils.DateUtil;
+import sausure.io.personallibrary.Utils.LogUtil;
 import sausure.io.personallibrary.Utils.StringUtil;
 import sausure.io.plume.APP;
 import sausure.io.plume.Adapter.ViewListAdapter;
+import sausure.io.plume.R;
 import sausure.io.plume.Retrofit.Entity.ViewList;
 import sausure.io.plume.Retrofit.Entity.ViewPoint;
 import sausure.io.plume.Retrofit.ZhiHuService;
@@ -25,7 +27,7 @@ import sausure.io.plume.Retrofit.ZhiHuService;
 /**
  * Created by JOJO on 2015/9/10.
  */
-public class ViewPresenter
+public class ViewPresenter implements Presenter
 {
     private ViewView viewView;
     private ViewModel viewModel;
@@ -41,6 +43,7 @@ public class ViewPresenter
         layoutManager = new LinearLayoutManager(context);
     }
 
+    @Override
     public void initialized()
     {
         if(adapter == null)
@@ -98,7 +101,7 @@ public class ViewPresenter
 
         if(Integer.valueOf(before) < ZhiHuService.startDay)
         {
-            Snackbar.make(viewView.getRefreshView(), "以上是全部内容", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(viewView.getRefreshView(),R.string.all_content, Snackbar.LENGTH_SHORT).show();
             return null;
         }
 
@@ -130,7 +133,7 @@ public class ViewPresenter
                 LoadLatest().subscribe(
                         viewPoints -> {},
                         e -> {
-                            Snackbar.make(viewView.getRefreshView(),"加载失败"+e.getMessage(),Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(viewView.getRefreshView(),R.string.load_error,Snackbar.LENGTH_SHORT).show();
                             viewView.getRefreshView().setRefreshing(false);
                         },
                         () -> viewView.getRefreshView().setRefreshing(false));
@@ -163,6 +166,8 @@ public class ViewPresenter
                         for (ViewPoint viewPoint : viewPoints)
                             if (StringUtil.isBlank(viewPoint.getTitle()) || StringUtil.isBlank(viewPoint.getImages().get(0)))
                                 viewPoints.remove(viewPoint);
+                            else
+                                LogUtil.i(viewPoint.toString());
                     });
         }
     }

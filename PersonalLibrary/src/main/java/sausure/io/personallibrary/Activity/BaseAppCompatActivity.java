@@ -301,37 +301,36 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
 
 
     /**
-     * override pending transition if toggleOverridePendingTransition() return
-     * true and getOverridePendingTransitionMode() return TransitionMode Enum
+     * override pending transition which
+     * TransitionMode return from getOverridePendingTransitionMode()
      */
     private void overridePendingTransition()
     {
-        if (toggleOverridePendingTransition())
-        {
-            switch (getOverridePendingTransitionMode())
-            {
-                case LEFT:
-                    overridePendingTransition(R.anim.left_in,R.anim.left_out);
-                    break;
-                case RIGHT:
-                    overridePendingTransition(R.anim.right_in,R.anim.right_out);
-                    break;
-                case TOP:
-                    overridePendingTransition(R.anim.top_in,R.anim.top_out);
-                    break;
-                case BOTTOM:
-                    overridePendingTransition(R.anim.bottom_in,R.anim.bottom_out);
-                    break;
-                case SCALE:
-                    overridePendingTransition(R.anim.scale_in,R.anim.scale_out);
-                    break;
-                case FADE:
-                    overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
-                    break;
+        TransitionMode mode = getOverridePendingTransitionMode();
 
-                default:
-                    throw new IllegalArgumentException("you should choose the given animation");
-            }
+        switch (mode)
+        {
+            case LEFT:
+                overridePendingTransition(R.anim.left_in,R.anim.left_out);
+                break;
+            case RIGHT:
+                overridePendingTransition(R.anim.right_in,R.anim.right_out);
+                break;
+            case TOP:
+                overridePendingTransition(R.anim.top_in,R.anim.top_out);
+                break;
+            case BOTTOM:
+                overridePendingTransition(R.anim.bottom_in,R.anim.bottom_out);
+                break;
+            case SCALE:
+                overridePendingTransition(R.anim.scale_in,R.anim.scale_out);
+                break;
+            case FADE:
+                overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -401,15 +400,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      * @return
      */
     protected boolean canNaviBack()
-    {
-        return false;
-    }
-
-    /**
-     * whether you want to override Pending transition
-     * @return
-     */
-    protected boolean toggleOverridePendingTransition()
     {
         return false;
     }

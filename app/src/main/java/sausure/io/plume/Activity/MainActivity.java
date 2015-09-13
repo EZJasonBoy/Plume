@@ -8,6 +8,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import butterknife.Bind;
 import sausure.io.personallibrary.Enum.TransitionMode;
 import sausure.io.plume.Presenter.MainPresenter;
+import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.R;
 
 /**
@@ -34,12 +35,6 @@ public class MainActivity extends BaseActivity implements MainPresenter.MainView
     }
 
     @Override
-    protected boolean toggleOverridePendingTransition()
-    {
-        return true;
-    }
-
-    @Override
     protected TransitionMode getOverridePendingTransitionMode()
     {
         return TransitionMode.FADE;
@@ -52,9 +47,8 @@ public class MainActivity extends BaseActivity implements MainPresenter.MainView
     }
 
     @Override
-    protected void onActivityCreated()
-    {
-        new MainPresenter(this,this).initialized();
+    protected Presenter getPresenter() {
+        return new MainPresenter(this,this);
     }
 
     @Override

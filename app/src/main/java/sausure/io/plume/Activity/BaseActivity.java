@@ -1,6 +1,7 @@
 package sausure.io.plume.Activity;
 
 import sausure.io.personallibrary.Activity.BaseAppCompatActivity;
+import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.R;
 
 /**
@@ -8,6 +9,20 @@ import sausure.io.plume.R;
  */
 public abstract class BaseActivity extends BaseAppCompatActivity
 {
+    protected Presenter presenter;
+
+    @Override
+    protected void onActivityCreated()
+    {
+        if(presenter == null)
+            presenter = getPresenter();
+
+        if(presenter == null)
+            throw new IllegalArgumentException("you must provide a Presenter implement");
+        else
+            presenter.initialized();
+    }
+
     @Override
     protected boolean statusBarNeedTranslucent()
     {
@@ -19,4 +34,6 @@ public abstract class BaseActivity extends BaseAppCompatActivity
     {
         return getResources().getColor(R.color.primary_dark);
     }
+
+    protected abstract Presenter getPresenter();
 }

@@ -13,6 +13,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import sausure.io.personallibrary.Utils.FileUtil;
+import sausure.io.personallibrary.Utils.LogUtil;
+import sausure.io.personallibrary.Utils.PreferencesUtil;
 import sausure.io.plume.APP;
 import sausure.io.plume.R;
 import sausure.io.plume.Retrofit.DownloadService;
@@ -22,7 +24,7 @@ import sausure.io.plume.Retrofit.ZhiHuService;
 /**
  * Created by JOJO on 2015/9/6.
  */
-public class SplashPresenter
+public class SplashPresenter implements Presenter
 {
     private SplashView splashView;
     private SplashModel splashModel;
@@ -33,6 +35,7 @@ public class SplashPresenter
         this.splashModel = new SplashModelImpl(context);
     }
 
+    @Override
     public void initialized()
     {
         splashView.initializeView(null,splashModel.getBackgroundImage());
@@ -49,7 +52,7 @@ public class SplashPresenter
             @Override
             public void onAnimationEnd(Animation animation)
             {
-                splashView.navigateToHomeActivity();
+                splashView.navigateToMainActivity();
             }
 
             @Override
@@ -89,6 +92,20 @@ public class SplashPresenter
                 .getStartImage(ZhiHuService.START_IMAGE)
                 .subscribeOn(Schedulers.io())
                 .map(StartImage::getImg)
+                .doOnNext(startImg -> LogUtil.i("there is latest start image "+ startImg))
+                .filter(startImg -> {
+                    String old = PreferencesUtil.getString(context, IMG_NAME,"");
+
+                    if (old.equals(startImg)) {
+                        LogUtil.i("do not need to update start image");
+                        return false;
+                    }
+                    else {
+                        LogUtil.i("prepare to update start image");
+                        PreferencesUtil.putString(context, IMG_NAME, startImg);
+                        return true;
+                    }
+                })
                 .flatMap(img ->
                         new RestAdapter
                                 .Builder()
@@ -97,6 +114,7 @@ public class SplashPresenter
                                 .create(DownloadService.class)
                                 .downloadStartImage(img.substring(img.lastIndexOf("/") + 1)))
                 .subscribeOn(Schedulers.io())
+                .doOnNext(response -> LogUtil.i("start image's url is " + response.getUrl()))
                 .subscribe(response -> FileUtil.saveFile(targetFile, response));
         }
 
@@ -116,7 +134,7 @@ public class SplashPresenter
 
         void animateBackgroundImage(Animation animation);
 
-        void navigateToHomeActivity();
+        void navigateToMainActivity();
     }
 
     /**

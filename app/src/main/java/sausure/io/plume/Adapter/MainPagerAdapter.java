@@ -25,7 +25,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter
     public Fragment getItem(int position)
     {
         if(position > fragments.size())
-            return null;
+            throw new IndexOutOfBoundsException("request position : " + position + ",but fragments.size() : " + fragments.size());
 
         return fragments.get(position);
     }

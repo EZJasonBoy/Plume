@@ -35,4 +35,10 @@ public class ViewPoint implements Serializable
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public String toString()
+    {
+        return "id："+ id + ",title：" + title + ",image：" + images.get(0);
+    }
 }

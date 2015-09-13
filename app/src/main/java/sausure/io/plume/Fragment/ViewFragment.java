@@ -5,14 +5,14 @@ import android.support.v7.widget.RecyclerView;
 import com.yalantis.phoenix.PullToRefreshView;
 
 import butterknife.Bind;
-import sausure.io.personallibrary.Fragment.LazyFragment;
+import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.Presenter.ViewPresenter;
 import sausure.io.plume.R;
 
 /**
  * Created by JOJO on 2015/9/10.
  */
-public class ViewFragment extends LazyFragment implements ViewPresenter.ViewView
+public class ViewFragment extends BaseFragment implements ViewPresenter.ViewView
 {
     @Bind(R.id.view_list)
     RecyclerView viewList;
@@ -21,9 +21,8 @@ public class ViewFragment extends LazyFragment implements ViewPresenter.ViewView
     PullToRefreshView refreshView;
 
     @Override
-    protected void onFirstUserVisible()
-    {
-        new ViewPresenter(context,this).initialized();
+    protected Presenter getPresenter() {
+        return new ViewPresenter(context,this);
     }
 
     @Override
@@ -33,7 +32,8 @@ public class ViewFragment extends LazyFragment implements ViewPresenter.ViewView
     }
 
     @Override
-    public void initialList(RecyclerView.LayoutManager layoutManager,RecyclerView.Adapter<?> adapter,RecyclerView.OnScrollListener onScrollListener)
+    public void initialList(RecyclerView.LayoutManager layoutManager,RecyclerView.Adapter<?> adapter,
+                            RecyclerView.OnScrollListener onScrollListener)
     {
         viewList.setLayoutManager(layoutManager);
         viewList.setAdapter(adapter);
