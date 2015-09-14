@@ -1,1 +1,1 @@
-include ':PersonalLibrary', 'App'
+include ':PersonalLibrary', ':App'
