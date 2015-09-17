@@ -8,23 +8,20 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AbsListView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.ButterKnife;
 import rx.Observable;
-import sausure.io.personallibrary.Receiver.NetMonitor;
 import sausure.io.personallibrary.Enum.NetState;
 import sausure.io.personallibrary.Enum.TransitionMode;
 import sausure.io.personallibrary.R;
+import sausure.io.personallibrary.Receiver.NetMonitor;
 import sausure.io.personallibrary.Utils.ActivityUtil;
 
 /**
@@ -33,11 +30,6 @@ import sausure.io.personallibrary.Utils.ActivityUtil;
 public abstract class BaseAppCompatActivity extends AppCompatActivity
         implements NetMonitor.HandleNetChangeListener
 {
-    /**
-     * Activity Tool Bar
-     */
-    public Toolbar toolbar;
-
     /**
      * Log tag
      */
@@ -92,17 +84,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
         super.setContentView(layoutResID);
         ButterKnife.bind(this);
         contentView = ButterKnife.findById(this, android.R.id.content);
-        toolbar = ButterKnife.findById(this,R.id.toolbar);
-        if(toolbar != null)
-        {
-            setSupportActionBar(toolbar);
-
-            if(canNaviBack())
-                Observable.just(getSupportActionBar())
-                    .filter(actionBar -> actionBar != null)
-                    .doOnNext(actionBar -> actionBar.setHomeButtonEnabled(true))
-                    .subscribe(actionBar ->actionBar.setDisplayHomeAsUpEnabled(true));
-        }
     }
 
     @Override
@@ -259,29 +240,29 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
         ActivityUtil.readyGo(this,clazz,bundle,true);
     }
 
-    /**
-     * when user click toolbar,scrollView can scroll to top quickly
-     * @param scrollView
-     * @param <S>
-     */
-    public <S> void scrollToTopQuickly(S scrollView)
-    {
-        try
-        {
-            if (toolbar != null)
-            {
-                if (scrollView instanceof AbsListView)
-                    toolbar.setOnClickListener(view -> ((AbsListView) scrollView).smoothScrollToPosition(0));
-                else if(scrollView instanceof RecyclerView)
-                    toolbar.setOnClickListener(view -> ((RecyclerView)scrollView).smoothScrollToPosition(0));
-            }
-        }
-        catch (Exception e)
-        {
-            //sorry,it does not work
-            throw new RuntimeException("sorry,it can not smooth scroll to top");
-        }
-    }
+//    /**
+//     * when user click toolbar,scrollView can scroll to top quickly
+//     * @param scrollView
+//     * @param <S>
+//     */
+//    public <S> void scrollToTopQuickly(S scrollView)
+//    {
+//        try
+//        {
+//            if (toolbar != null)
+//            {
+//                if (scrollView instanceof AbsListView)
+//                    toolbar.setOnClickListener(view -> ((AbsListView) scrollView).smoothScrollToPosition(0));
+//                else if(scrollView instanceof RecyclerView)
+//                    toolbar.setOnClickListener(view -> ((RecyclerView)scrollView).smoothScrollToPosition(0));
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            //sorry,it does not work
+//            throw new RuntimeException("sorry,it can not smooth scroll to top");
+//        }
+//    }
 
     /**
      * get bundle which emitted by the previous component
@@ -393,15 +374,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     protected int getStatusBarColor()
     {
         return 0;
-    }
-
-    /**
-     * this activity can finish by navigation
-     * @return
-     */
-    protected boolean canNaviBack()
-    {
-        return false;
     }
 
     /**
