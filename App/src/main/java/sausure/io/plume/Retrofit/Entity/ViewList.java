@@ -1,5 +1,7 @@
 package sausure.io.plume.Retrofit.Entity;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -7,15 +9,18 @@ import java.util.List;
  */
 public class ViewList
 {
-    private String data;
+    @SerializedName("date")
+    private String date;
+
+    @SerializedName("stories")
     private List<ViewPoint> stories;
 
-    public String getData() {
-        return data;
+    public String getDate() {
+        return date;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public List<ViewPoint> getStories() {

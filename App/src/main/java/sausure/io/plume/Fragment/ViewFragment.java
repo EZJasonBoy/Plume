@@ -1,10 +1,18 @@
 package sausure.io.plume.Fragment;
 
+import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.yalantis.phoenix.PullToRefreshView;
 
+import java.io.Serializable;
+
 import butterknife.Bind;
+import sausure.io.personallibrary.Utils.ActivityUtil;
+import sausure.io.personallibrary.Utils.LogUtil;
+import sausure.io.plume.Activity.ViewDetailActivity;
 import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.Presenter.ViewPresenter;
 import sausure.io.plume.R;
@@ -22,7 +30,7 @@ public class ViewFragment extends BaseFragment implements ViewPresenter.ViewView
 
     @Override
     protected Presenter getPresenter() {
-        return new ViewPresenter(context,this);
+        return new ViewPresenter(activity,this);
     }
 
     @Override
@@ -32,12 +40,15 @@ public class ViewFragment extends BaseFragment implements ViewPresenter.ViewView
     }
 
     @Override
-    public void initialList(RecyclerView.LayoutManager layoutManager,RecyclerView.Adapter<?> adapter,
-                            RecyclerView.OnScrollListener onScrollListener)
+    public void initialList(RecyclerView.LayoutManager layoutManager,
+                            RecyclerView.Adapter<?> adapter,
+                            RecyclerView.OnScrollListener onScrollListener,
+                            RecyclerView.OnItemTouchListener onItemTouchListener)
     {
         viewList.setLayoutManager(layoutManager);
         viewList.setAdapter(adapter);
         viewList.addOnScrollListener(onScrollListener);
+        viewList.addOnItemTouchListener(onItemTouchListener);
     }
 
     @Override
@@ -50,5 +61,20 @@ public class ViewFragment extends BaseFragment implements ViewPresenter.ViewView
     public PullToRefreshView getRefreshView()
     {
         return refreshView;
+    }
+
+    @Override
+    public boolean onItemClick(View view,Serializable tag, int position)
+    {
+        LogUtil.i("position: " + position + " on touch");
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ViewDetailActivity.VIEW_DETAIL, tag);
+
+        ActivityOptionsCompat options = ActivityOptionsCompat
+                .makeSceneTransitionAnimation(activity,view.findViewById(R.id.image),getString(R.string.view_img_transition));
+        ActivityUtil.readyGoWithAnimation(activity, ViewDetailActivity.class, bundle, options);
+
+        return true;
     }
 }

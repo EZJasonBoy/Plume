@@ -11,8 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -22,7 +20,6 @@ import sausure.io.personallibrary.Enum.NetState;
 import sausure.io.personallibrary.Enum.TransitionMode;
 import sausure.io.personallibrary.R;
 import sausure.io.personallibrary.Receiver.NetMonitor;
-import sausure.io.personallibrary.Utils.ActivityUtil;
 
 /**
  * Created by JOJO on 2015/9/1.
@@ -36,9 +33,9 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     protected String TAG_LOG;
 
     /**
-     * Activity Context
+     * Activity
      */
-    protected Activity context;
+    protected Activity activity;
 
     /**
      * root view
@@ -60,13 +57,12 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        context = this;
+        activity = this;
         TAG_LOG = getClass().getSimpleName();
 
         overridePendingTransition();
         getBundleExtras();
         setContentView(getLayoutResId());
-        setStatusBarTranslucent();
         setStatusBarColor();
 
         if(monitorNetWork())
@@ -123,7 +119,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
         if(monitorNetWork())
             NetMonitor.unRegisterNetworkMonitor(this);
 
-        context = null;
+        activity = null;
         contentView = null;
     }
 
@@ -150,7 +146,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     private Snackbar getSnackbar()
     {
         Snackbar bar = Snackbar.make(contentView, R.string.network_offline, Snackbar.LENGTH_SHORT);
-        bar.setAction(R.string.toggleNetwork,(view -> startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS))));
+        bar.setAction(R.string.toggleNetwork, (view -> startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS))));
         return bar;
     }
 
@@ -179,65 +175,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     protected boolean doubleClickFinish()
     {
         return false;
-    }
-
-    /**
-     * convenient way to start activity
-     * @param clazz
-     */
-    public void startActivity(Class<?> clazz)
-    {
-        ActivityUtil.readyGo(this,clazz);
-    }
-
-    /**
-     * convenient way to start activity
-     * @param clazz
-     * @param bundle
-     */
-    public void startActivity(Class<?> clazz, Bundle bundle)
-    {
-        ActivityUtil.readyGo(this,clazz, bundle);
-    }
-
-    /**
-     * convenient way to start activity
-     * @param clazz
-     * @param requestCode
-     */
-    public void startActivityForResult(Class<?> clazz, int requestCode)
-    {
-        ActivityUtil.readyGoForResult(this, clazz, requestCode);
-    }
-
-    /**
-     * convenient way to start activity
-     * @param clazz
-     * @param bundle
-     * @param requestCode
-     */
-    public void startActivityForResult(Class<?> clazz,Bundle bundle,int requestCode)
-    {
-        ActivityUtil.readyGoForResult(this,clazz,bundle, requestCode);
-    }
-
-    /**
-     * start activity before finish
-     * @param clazz
-     */
-    public void startActivityBeforeFinish(Class<?> clazz)
-    {
-        ActivityUtil.readyGo(this,clazz, true);
-    }
-
-    /**
-     * start activity before finish
-     * @param clazz
-     * @param bundle
-     */
-    public void startActivityBeforeFinish(Class<?> clazz,Bundle bundle)
-    {
-        ActivityUtil.readyGo(this,clazz,bundle,true);
     }
 
 //    /**
@@ -289,56 +226,31 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     {
         TransitionMode mode = getOverridePendingTransitionMode();
 
-        switch (mode)
-        {
-            case LEFT:
-                overridePendingTransition(R.anim.left_in,R.anim.left_out);
-                break;
-            case RIGHT:
-                overridePendingTransition(R.anim.right_in,R.anim.right_out);
-                break;
-            case TOP:
-                overridePendingTransition(R.anim.top_in,R.anim.top_out);
-                break;
-            case BOTTOM:
-                overridePendingTransition(R.anim.bottom_in,R.anim.bottom_out);
-                break;
-            case SCALE:
-                overridePendingTransition(R.anim.scale_in,R.anim.scale_out);
-                break;
-            case FADE:
-                overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
-                break;
+        if(mode != null)
+            switch (mode)
+            {
+                case LEFT:
+                    overridePendingTransition(R.anim.left_in,R.anim.left_out);
+                    break;
+                case RIGHT:
+                    overridePendingTransition(R.anim.right_in,R.anim.right_out);
+                    break;
+                case TOP:
+                    overridePendingTransition(R.anim.top_in,R.anim.top_out);
+                    break;
+                case BOTTOM:
+                    overridePendingTransition(R.anim.bottom_in,R.anim.bottom_out);
+                    break;
+                case SCALE:
+                    overridePendingTransition(R.anim.scale_in,R.anim.scale_out);
+                    break;
+                case FADE:
+                    overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+                    break;
 
-            default:
-                break;
-        }
-    }
-
-    /**
-     * set status bar to be translucent
-     */
-    private void setStatusBarTranslucent()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-        {
-            Window win = getWindow();
-            WindowManager.LayoutParams winParams = win.getAttributes();
-            final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-            if (statusBarNeedTranslucent())
-                winParams.flags |= bits;
-            else
-                winParams.flags &= ~bits;
-        }
-    }
-
-    /**
-     * whether status bar needs to be translucent
-     * @return
-     */
-    protected boolean statusBarNeedTranslucent()
-    {
-        return false;
+                default:
+                    break;
+            }
     }
 
     /**
@@ -346,7 +258,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      */
     private void setStatusBarColor()
     {
-        try
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
         {
             int tintColor = getStatusBarColor();
             SystemBarTintManager mTintManager = new SystemBarTintManager(this);
@@ -360,10 +272,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
                 mTintManager.setStatusBarTintEnabled(false);
                 mTintManager.setTintDrawable(null);
             }
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException("unable to set status bar to target color");
         }
     }
 

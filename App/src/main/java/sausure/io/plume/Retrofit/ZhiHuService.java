@@ -5,6 +5,7 @@ import retrofit.http.Path;
 import rx.Observable;
 import sausure.io.plume.Retrofit.Entity.StartImage;
 import sausure.io.plume.Retrofit.Entity.ViewList;
+import sausure.io.plume.Retrofit.Entity.ViewPointDetail;
 
 /**
  * Created by JOJO on 2015/9/6.
@@ -13,8 +14,6 @@ public interface ZhiHuService
 {
     String ZHIHU_API = "http://news-at.zhihu.com/api/4";
     String START_IMAGE = "1080*1776";
-    String LATEST = "latest";
-    String BEFORE = "before/";
     int startDay = 20130520;
 
     /**
@@ -30,4 +29,7 @@ public interface ZhiHuService
 
     @GET("/news/before/{before}")
     Observable<ViewList> getBeforeViews(@Path("before")String before);
+
+    @GET("/news/{id}")
+    Observable<ViewPointDetail> getViewPointDetail(@Path("id")int id);
 }

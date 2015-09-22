@@ -17,10 +17,10 @@ import sausure.io.plume.R;
 public class MainActivity extends BaseActivity implements MainPresenter.MainView
 {
     @Bind(R.id.smart_tab)
-    SmartTabLayout tabLayout;
+    protected SmartTabLayout tabLayout;
 
     @Bind(R.id.view_pager)
-    ViewPager viewPager;
+    protected ViewPager viewPager;
 
     @Override
     protected int getLayoutResId()

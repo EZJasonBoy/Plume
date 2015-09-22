@@ -16,4 +16,5 @@
     <string name="picture">PICTURE</string>
     <string name="all_content">以上是全部内容</string>
     <string name="load_error">加载失败</string>
+    <string name="view_img_transition">view_img_transition</string>
 </resources>

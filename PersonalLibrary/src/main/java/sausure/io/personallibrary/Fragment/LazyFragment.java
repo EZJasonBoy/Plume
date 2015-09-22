@@ -1,7 +1,6 @@
 package sausure.io.personallibrary.Fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
 import rx.Observable;
-import sausure.io.personallibrary.Utils.ActivityUtil;
 
 /**
  * Created by JOJO on 2015/9/9.
@@ -26,9 +24,9 @@ public abstract class LazyFragment extends Fragment
     protected String TAG_LOG;
 
     /**
-     * context
+     * activity
      */
-    protected Context context;
+    protected Activity activity;
 
     /**
      *
@@ -44,7 +42,7 @@ public abstract class LazyFragment extends Fragment
     public void onAttach(Activity activity)
     {
         super.onAttach(activity);
-        context = activity;
+        this.activity = activity;
         TAG_LOG = this.getClass().getSimpleName();
         isFirstVisible = true;
         isPrepared = false;
@@ -85,7 +83,7 @@ public abstract class LazyFragment extends Fragment
     public void onDetach()
     {
         super.onDetach();
-        context = null;
+        activity = null;
     }
 
     @Override
@@ -130,46 +128,6 @@ public abstract class LazyFragment extends Fragment
         }
         else
             onPauseActually();
-    }
-
-    /**
-     * convenient way to start activity
-     * @param className
-     */
-    public void startActivity(Class<?> className)
-    {
-        ActivityUtil.readyGo(context, className);
-    }
-
-    /**
-     * convenient way to start activity
-     * @param className
-     * @param bundle
-     */
-    public void startActivity(Class<?> className,Bundle bundle)
-    {
-        ActivityUtil.readyGo(context,className,bundle);
-    }
-
-    /**
-     * convenient way to start activity
-     * @param className
-     * @param requestCode
-     */
-    public void startActivityForResult(Class<?> className,int requestCode)
-    {
-        ActivityUtil.readyGoForResult(this, className, requestCode);
-    }
-
-    /**
-     * convenient way to start activity
-     * @param className
-     * @param bundle
-     * @param requestCode
-     */
-    public void startActivityForResult(Class<?> className,Bundle bundle,int requestCode)
-    {
-        ActivityUtil.readyGoForResult(this,className,bundle,requestCode);
     }
 
     /**

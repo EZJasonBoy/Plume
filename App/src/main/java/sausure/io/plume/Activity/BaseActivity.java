@@ -17,8 +17,8 @@ public abstract class BaseActivity extends BaseAppCompatActivity
     /**
      * Activity Tool Bar
      */
-    @Bind(R.id.toolbar)
     @Nullable
+    @Bind(R.id.toolbar)
     protected Toolbar toolbar;
 
     protected Presenter presenter;
@@ -37,7 +37,6 @@ public abstract class BaseActivity extends BaseAppCompatActivity
                         .subscribe(actionBar ->actionBar.setDisplayHomeAsUpEnabled(true));
         }
 
-
         if(presenter == null)
             presenter = getPresenter();
 
@@ -48,17 +47,10 @@ public abstract class BaseActivity extends BaseAppCompatActivity
     }
 
     @Override
-    protected boolean statusBarNeedTranslucent()
-    {
-        return true;
-    }
-
-    @Override
     protected int getStatusBarColor()
     {
         return getResources().getColor(R.color.primary_dark);
     }
-
 
     /**
      * this activity can finish by navigation

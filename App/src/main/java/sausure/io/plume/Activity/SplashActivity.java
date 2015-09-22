@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import butterknife.Bind;
 import rx.Observable;
 import sausure.io.personallibrary.Enum.TransitionMode;
+import sausure.io.personallibrary.Utils.ActivityUtil;
 import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.Presenter.SplashPresenter;
 import sausure.io.plume.R;
@@ -18,7 +19,7 @@ import sausure.io.plume.R;
 public class SplashActivity extends BaseActivity implements SplashPresenter.SplashView
 {
     @Bind(R.id.start_img)
-    ImageView startImageView;
+    protected ImageView startImageView;
 
     @Override
     protected int getLayoutResId()
@@ -40,7 +41,7 @@ public class SplashActivity extends BaseActivity implements SplashPresenter.Spla
 
     @Override
     protected Presenter getPresenter() {
-        return new SplashPresenter(this,this);
+        return new SplashPresenter(activity,this);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class SplashActivity extends BaseActivity implements SplashPresenter.Spla
     @Override
     public void navigateToMainActivity()
     {
-        startActivityBeforeFinish(MainActivity.class);
+        ActivityUtil.readyGo(activity,MainActivity.class,true);
     }
 
     @Override

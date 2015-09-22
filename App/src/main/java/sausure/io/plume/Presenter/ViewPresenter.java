@@ -4,10 +4,13 @@ import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.yalantis.phoenix.PullToRefreshView;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.List;
 
@@ -35,10 +38,15 @@ public class ViewPresenter implements Presenter
     private LinearLayoutManager layoutManager;
     private int offset = 0;
     private boolean isLoading = false;
+    private Context context;
+    private String before;
 
     public ViewPresenter(Context context,ViewView viewView)
     {
         this.viewView = viewView;
+        this.context = context;
+        this.viewView = viewView;
+
         viewModel = new ViewModelImpl();
         layoutManager = new LinearLayoutManager(context);
     }
@@ -51,11 +59,10 @@ public class ViewPresenter implements Presenter
 
         if(!isLoading)
             LoadLatest().subscribe(
-                    viewPoints -> Log.i("test", "onNext"),
-                    e -> Log.i("test", "onError"),
-                    () -> Log.i("test", "onComplete"));
+                    viewPoints -> LogUtil.i("load latest --onNext"),
+                    e -> LogUtil.e("load latest --onError：" + e.getMessage()));
 
-        viewView.initialList(layoutManager,adapter,getOnScrollListener());
+        viewView.initialList(layoutManager,adapter,getOnScrollListener(),getOnItemTouchListener());
         viewView.initialRefresh(getRefreshListener());
     }
 
@@ -75,11 +82,49 @@ public class ViewPresenter implements Presenter
 
                     if(observable != null)
                         observable.subscribe(
-                                viewPoints -> Log.i("test", "onNext"),
-                                e -> Log.i("test", "onError"),
-                                () -> Log.i("test", "onComplete"));
+                                viewPoints -> LogUtil.i("load Before：" + before + " --onNext"),
+                                e -> LogUtil.e("load Before："+ before + " --onError：" + e.getMessage()));
                 }
             }
+        };
+    }
+
+    private RecyclerView.OnItemTouchListener getOnItemTouchListener()
+    {
+        return new RecyclerView.OnItemTouchListener()
+        {
+            private GestureDetector detector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener()
+            {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e)
+                {
+                    return true;
+                }
+            });
+
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
+            {
+                if(detector.onTouchEvent(e))
+                {
+                    View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                    int position = rv.getChildAdapterPosition(childView);
+                    ViewPoint viewPoint = adapter.getViewPoints().get(position);
+
+                    return childView != null &&
+                            viewPoint != null &&
+                            viewView.onItemClick(childView,viewPoint, position);
+                }
+                else
+                    return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e)
+            {}
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
         };
     }
 
@@ -97,7 +142,7 @@ public class ViewPresenter implements Presenter
     {
         isLoading = true;
 
-        String before = getBeforeDate(--offset);
+        before = getBeforeDate(--offset);
 
         if(Integer.valueOf(before) < ZhiHuService.startDay)
         {
@@ -131,8 +176,9 @@ public class ViewPresenter implements Presenter
         return ()-> {
             if(!isLoading)
                 LoadLatest().subscribe(
-                        viewPoints -> {},
+                        viewPoints -> LogUtil.i("load latest --onNext"),
                         e -> {
+                            LogUtil.e("load latest --onError：" + e.getMessage());
                             Snackbar.make(viewView.getRefreshView(),R.string.load_error,Snackbar.LENGTH_SHORT).show();
                             viewView.getRefreshView().setRefreshing(false);
                         },
@@ -161,6 +207,7 @@ public class ViewPresenter implements Presenter
             return observable
                     .subscribeOn(Schedulers.io())
                     .doOnNext(viewList -> isLoading = false)
+                    .doOnNext(viewList -> LogUtil.i("View List：" + viewList.getDate()))
                     .map(ViewList::getStories)
                     .doOnNext(viewPoints -> {
                         for (ViewPoint viewPoint : viewPoints)
@@ -181,10 +228,15 @@ public class ViewPresenter implements Presenter
 
     public interface ViewView
     {
-        void initialList(RecyclerView.LayoutManager layoutManager,RecyclerView.Adapter<?> adapter,RecyclerView.OnScrollListener onScrollListener);
+        void initialList(RecyclerView.LayoutManager layoutManager,
+                         RecyclerView.Adapter<?> adapter,
+                         RecyclerView.OnScrollListener onScrollListener,
+                         RecyclerView.OnItemTouchListener onItemTouchListener);
 
         void initialRefresh(PullToRefreshView.OnRefreshListener refreshListener);
 
         PullToRefreshView getRefreshView();
+
+        boolean onItemClick(View view,Serializable tag, int position);
     }
 }

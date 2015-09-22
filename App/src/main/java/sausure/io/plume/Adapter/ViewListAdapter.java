@@ -38,6 +38,11 @@ public class ViewListAdapter extends RecyclerView.Adapter<ViewListAdapter.ViewHo
         addAll(add);
     }
 
+    public List<ViewPoint> getViewPoints()
+    {
+        return viewList;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {

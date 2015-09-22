@@ -1,5 +1,7 @@
 package sausure.io.plume.Retrofit.Entity;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,8 +10,13 @@ import java.util.List;
  */
 public class ViewPoint implements Serializable
 {
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("images")
     private List<String> images;
+
+    @SerializedName("title")
     private String title;
 
     public int getId() {

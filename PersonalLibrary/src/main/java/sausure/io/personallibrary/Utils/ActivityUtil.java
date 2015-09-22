@@ -1,9 +1,11 @@
 package sausure.io.personallibrary.Utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 
 /**
@@ -13,52 +15,51 @@ public class ActivityUtil
 {
     /**
      * start activity
-     * @param context
+     * @param activity
      * @param className
      */
-    public static  void readyGo(Context context,Class<?> className)
+    public static  void readyGo(Activity activity,Class<?> className)
     {
-        readyGo(context,className,false);
+        readyGo(activity,className,false);
     }
 
     /**
      * start activity before finish or not
-     * @param context
+     * @param activity
      * @param className
      * @param finish
      */
-    public static  void readyGo(Context context,Class<?> className,boolean finish)
+    public static  void readyGo(Activity activity,Class<?> className,boolean finish)
     {
-        context.startActivity(getIntent(context, className));
+        activity.startActivity(getIntent(activity, className));
 
-        if(finish && context instanceof Activity)
-            ((Activity)context).finish();
+        if(finish)
+            activity.finish();
     }
 
     /**
      * start activity whit bundle
-     * @param context
+     * @param activity
      * @param className
      * @param bundle
      */
-    public static void readyGo(Context context,Class<?> className,Bundle bundle)
-    {
-        readyGo(context,className,bundle,false);
+    public static void readyGo(Activity activity,Class<?> className,Bundle bundle) {
+        readyGo(activity, className, bundle, false);
     }
 
     /**
      * start activity whit bundle before finish or not
-     * @param context
+     * @param activity
      * @param className
      * @param bundle
      * @param finish
      */
-    public static void readyGo(Context context,Class<?> className,Bundle bundle,boolean finish)
+    public static void readyGo(Activity activity,Class<?> className,Bundle bundle,boolean finish)
     {
-        context.startActivity(getIntent(context,className).putExtras(bundle));
+        activity.startActivity(getIntent(activity, className).putExtras(bundle));
 
-        if(finish && context instanceof Activity)
-            ((Activity)context).finish();
+        if(finish)
+            activity.finish();
     }
 
     /**
@@ -81,7 +82,7 @@ public class ActivityUtil
      */
     public static void readyGoForResult(Activity activity,Class<?> className,Bundle bundle,int requestCode)
     {
-        activity.startActivityForResult(getIntent(activity,className).putExtras(bundle),requestCode);
+        activity.startActivityForResult(getIntent(activity, className).putExtras(bundle), requestCode);
     }
 
     /**
@@ -92,7 +93,7 @@ public class ActivityUtil
      */
     public static void readyGoForResult(Fragment fragment,Class<?> className,int requestCode)
     {
-        fragment.startActivityForResult(getIntent(fragment.getActivity(),className),requestCode);
+        fragment.startActivityForResult(getIntent(fragment.getActivity(), className), requestCode);
     }
 
     /**
@@ -104,17 +105,65 @@ public class ActivityUtil
      */
     public static void readyGoForResult(Fragment fragment,Class<?> className,Bundle bundle,int requestCode)
     {
-        fragment.startActivityForResult(getIntent(fragment.getActivity(),className).putExtras(bundle),requestCode);
+        fragment.startActivityForResult(getIntent(fragment.getActivity(), className).putExtras(bundle), requestCode);
+    }
+
+    /**
+     * start activity with animation
+     * @param activity
+     * @param className
+     * @param option
+     */
+    public static void readyGoWithAnimation(Activity activity, Class<?> className, @NonNull ActivityOptionsCompat option)
+    {
+        ActivityCompat.startActivity(activity, getIntent(activity, className), option.toBundle());
+    }
+
+    /**
+     * start activity with animation
+     * @param activity
+     * @param className
+     * @param bundle
+     * @param option
+     */
+    public static void readyGoWithAnimation(Activity activity, Class<?> className, Bundle bundle, @NonNull ActivityOptionsCompat option)
+    {
+        ActivityCompat.startActivity(activity, getIntent(activity, className).putExtras(bundle), option.toBundle());
+    }
+
+    /**
+     * start activity with animation
+     * @param activity
+     * @param className
+     * @param option
+     * @param requestCode
+     */
+    public static void readyGoWithAnimatorForResult(Activity activity,Class<?> className,@NonNull ActivityOptionsCompat option,int requestCode)
+    {
+        ActivityCompat.startActivityForResult(activity, getIntent(activity, className), requestCode, option.toBundle());
+    }
+
+    /**
+     * start activity with animation
+     * @param activity
+     * @param className
+     * @param bundle
+     * @param option
+     * @param requestCode
+     */
+    public static void readyGoWithAnimatorForResult(Activity activity,Class<?> className,Bundle bundle,@NonNull ActivityOptionsCompat option,int requestCode)
+    {
+        ActivityCompat.startActivityForResult(activity, getIntent(activity, className).putExtras(bundle), requestCode,option.toBundle());
     }
 
     /**
      * generate target intent
-     * @param context
+     * @param activity
      * @param clazz
      * @return
      */
-    private static Intent getIntent(Context context,Class<?> clazz)
+    private static Intent getIntent(Activity activity,Class<?> clazz)
     {
-        return new Intent(context,clazz);
+        return new Intent(activity,clazz);
     }
 }
