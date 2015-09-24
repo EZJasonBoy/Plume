@@ -198,19 +198,19 @@ public class ViewPresenter implements Presenter
         @Override
         public Observable<List<ViewPoint>> getLatestViews()
         {
-            return toggleObservable(APP.getZhiHuService().getLatestViews());
+            return toggleObservable(APP.toggleRetrofitCall(APP.getZhiHuService().getLatestViews()));
         }
 
         @Override
         public Observable<List<ViewPoint>> getBeforeViews(String date)
         {
-            return toggleObservable(APP.getZhiHuService().getBeforeViews(date));
+            return toggleObservable(APP.toggleRetrofitCall(APP.getZhiHuService().getBeforeViews(date)));
         }
 
         private Observable<List<ViewPoint>> toggleObservable(Observable<ViewList> observable)
         {
             return observable
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.newThread())
                     .doOnNext(viewList -> isLoading = false)
                     .doOnNext(viewList -> LogUtil.i("View List：" + viewList.getDate()))
                     .map(ViewList::getStories)

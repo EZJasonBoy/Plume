@@ -6,9 +6,12 @@ import android.graphics.BitmapFactory;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import java.io.File;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import retrofit.RestAdapter;
+import java.io.File;
+import java.io.IOException;
+
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -17,7 +20,6 @@ import sausure.io.personallibrary.Utils.LogUtil;
 import sausure.io.personallibrary.Utils.PreferencesUtil;
 import sausure.io.plume.APP;
 import sausure.io.plume.R;
-import sausure.io.plume.Retrofit.DownloadService;
 import sausure.io.plume.Retrofit.Entity.StartImage;
 import sausure.io.plume.Retrofit.ZhiHuService;
 
@@ -88,34 +90,48 @@ public class SplashPresenter implements Presenter
         @Override
         public void UpdateBackgroundImage()
         {
-            APP.getZhiHuService()
-                .getStartImage(ZhiHuService.START_IMAGE)
-                .subscribeOn(Schedulers.io())
+            APP.toggleRetrofitCall(APP.getZhiHuService().getStartImage(ZhiHuService.START_IMAGE))
+                .subscribeOn(Schedulers.newThread())
                 .map(StartImage::getImg)
-                .doOnNext(startImg -> LogUtil.i("there is latest start image "+ startImg))
+                .doOnNext(startImg -> LogUtil.i("there is latest start image " + startImg))
                 .filter(startImg -> {
-                    String old = PreferencesUtil.getString(context, IMG_NAME,"");
+                    String old = PreferencesUtil.getString(context, IMG_NAME, "");
 
                     if (old.equals(startImg)) {
                         LogUtil.i("do not need to update start image");
                         return false;
-                    }
-                    else {
+                    } else {
                         LogUtil.i("prepare to update start image");
                         PreferencesUtil.putString(context, IMG_NAME, startImg);
                         return true;
                     }
                 })
-                .flatMap(img ->
-                        new RestAdapter
-                                .Builder()
-                                .setEndpoint(img.substring(0, img.lastIndexOf("/")))
-                                .build()
-                                .create(DownloadService.class)
-                                .downloadStartImage(img.substring(img.lastIndexOf("/") + 1)))
-                .subscribeOn(Schedulers.io())
-                .doOnNext(response -> LogUtil.i("start image's url is " + response.getUrl()))
-                .subscribe(response -> FileUtil.saveFile(targetFile, response));
+                .flatMap(img -> Observable.just(downloadStartImage(img)))
+                .subscribeOn(Schedulers.newThread())
+                .filter(response -> response != null && response.code() == 200)
+                .doOnNext(response -> LogUtil.i("start image's url is " + response.request().urlString()))
+                .subscribe(response -> FileUtil.saveFile(targetFile, response), e -> LogUtil.e(e.getMessage()));
+        }
+
+        /**
+         * create a okhttp request to download the image
+         * @param imageUrl
+         * @return
+         */
+        private Response downloadStartImage(String imageUrl)
+        {
+            try
+            {
+                Request request = new Request.Builder().url(imageUrl).build();
+                Response response = APP.getOkHttpClient().newCall(request).execute();
+                return response;
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            return null;
         }
 
         @Override

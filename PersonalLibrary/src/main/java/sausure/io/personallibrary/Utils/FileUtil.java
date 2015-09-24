@@ -1,12 +1,12 @@
 package sausure.io.personallibrary.Utils;
 
+import com.squareup.okhttp.Response;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import retrofit.client.Response;
 
 /**
  * Created by JOJO on 2015/9/7.
@@ -32,7 +32,7 @@ public class FileUtil
     {
         try
         {
-            FileUtil.saveFile(file, FileUtil.getBytesFromStream(response.getBody().in()));
+            FileUtil.saveFile(file, FileUtil.getBytesFromStream(response.body().byteStream()));
         }
         catch (IOException e)
         {

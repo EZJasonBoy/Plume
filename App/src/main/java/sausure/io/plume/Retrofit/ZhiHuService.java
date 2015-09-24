@@ -1,8 +1,8 @@
 package sausure.io.plume.Retrofit;
 
+import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
-import rx.Observable;
 import sausure.io.plume.Retrofit.Entity.StartImage;
 import sausure.io.plume.Retrofit.Entity.ViewList;
 import sausure.io.plume.Retrofit.Entity.ViewPointDetail;
@@ -12,7 +12,7 @@ import sausure.io.plume.Retrofit.Entity.ViewPointDetail;
  */
 public interface ZhiHuService
 {
-    String ZHIHU_API = "http://news-at.zhihu.com/api/4";
+    String ZHIHU_API = "http://news-at.zhihu.com/api/4/";
     String START_IMAGE = "1080*1776";
     int startDay = 20130520;
 
@@ -21,15 +21,15 @@ public interface ZhiHuService
      * @param img
      * @return
      */
-    @GET("/start-image/{img}")
-    Observable<StartImage> getStartImage(@Path("img")String img);
+    @GET("start-image/{img}")
+    Call<StartImage> getStartImage(@Path("img")String img);
 
-    @GET("/news/latest")
-    Observable<ViewList> getLatestViews();
+    @GET("news/latest")
+    Call<ViewList> getLatestViews();
 
-    @GET("/news/before/{before}")
-    Observable<ViewList> getBeforeViews(@Path("before")String before);
+    @GET("news/before/{before}")
+    Call<ViewList> getBeforeViews(@Path("before")String before);
 
-    @GET("/news/{id}")
-    Observable<ViewPointDetail> getViewPointDetail(@Path("id")int id);
+    @GET("news/{id}")
+    Call<ViewPointDetail> getViewPointDetail(@Path("id")int id);
 }

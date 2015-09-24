@@ -1,14 +1,18 @@
 package sausure.io.plume.Activity;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+
 import butterknife.Bind;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.Presenter.ViewDetailPresenter;
 import sausure.io.plume.R;
@@ -68,8 +72,21 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
     }
 
     @Override
-    public void refreshImage(String imageUrl) {
-       new Handler().postDelayed(()->Picasso.with(activity).load(imageUrl).into(imageView),500);
+    public void refreshImage(String imageUrl)
+    {
+        Observable.just(imageUrl)
+                .map(url -> {
+                    try {
+                        return Picasso.with(activity).load(url).get();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(bitmap1 -> bitmap1 != null)
+                .subscribe(imageView::setImageBitmap);
     }
 
     @Override

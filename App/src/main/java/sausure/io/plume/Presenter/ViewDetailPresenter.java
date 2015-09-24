@@ -32,7 +32,8 @@ public class ViewDetailPresenter implements Presenter
                 .map(this::generateHtml)
                 .map(html -> html.replace("<div class=\"img-place-holder\">", ""))
                 .subscribe(viewDetailView::initializeWebView,
-                        e -> {LogUtil.e("--onError：" +  e.getMessage());
+                        e -> {
+                            LogUtil.e("--onError：" + e.getMessage());
                         e.printStackTrace();
                         });
     }
@@ -62,10 +63,9 @@ public class ViewDetailPresenter implements Presenter
     {
         @Override
         public Observable<ViewPointDetail> getViewPointDetail(int id) {
-            return APP.getZhiHuService().getViewPointDetail(id)
-                    .subscribeOn(Schedulers.io())
+            return APP.toggleRetrofitCall(APP.getZhiHuService().getViewPointDetail(id))
+                    .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread());
-//                    .doOnNext(viewPointDetail -> LogUtil.i(viewPointDetail.getBody()));
         }
     }
 
