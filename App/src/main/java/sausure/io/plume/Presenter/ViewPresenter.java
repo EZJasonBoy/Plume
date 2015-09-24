@@ -83,7 +83,10 @@ public class ViewPresenter implements Presenter
                     if(observable != null)
                         observable.subscribe(
                                 viewPoints -> LogUtil.i("load Before：" + before + " --onNext"),
-                                e -> LogUtil.e("load Before："+ before + " --onError：" + e.getMessage()));
+                                e -> {
+                                    LogUtil.e("load Before："+ before + " --onError：" + e.getMessage());
+                                    e.printStackTrace();
+                                });
                 }
             }
         };
@@ -109,7 +112,9 @@ public class ViewPresenter implements Presenter
                 {
                     View childView = rv.findChildViewUnder(e.getX(), e.getY());
                     int position = rv.getChildAdapterPosition(childView);
-                    ViewPoint viewPoint = adapter.getViewPoints().get(position);
+                    List<ViewPoint> viewPoints = adapter.getViewPoints();
+                    ViewPoint viewPoint = position >= 0 && viewPoints != null && viewPoints.size() > position ?
+                            viewPoints.get(position) : null;
 
                     return childView != null &&
                             viewPoint != null &&

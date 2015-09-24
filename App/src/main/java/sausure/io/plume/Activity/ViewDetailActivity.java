@@ -1,9 +1,8 @@
 package sausure.io.plume.Activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
@@ -36,8 +35,8 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
     @Override
     protected void onActivityCreated() {
         super.onActivityCreated();
-        Picasso.with(activity).load(viewPoint.getImages().get(0)).into(imageView);
         collapsingToolbarLayout.setTitle(viewPoint.getTitle());
+        Picasso.with(activity).load(viewPoint.getImages().get(0)).into(imageView);
     }
 
     @Override
@@ -70,17 +69,11 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
 
     @Override
     public void refreshImage(String imageUrl) {
-        Picasso.with(activity).load(imageUrl).into(imageView);
+       new Handler().postDelayed(()->Picasso.with(activity).load(imageUrl).into(imageView),500);
     }
 
     @Override
     public void initializeWebView(String html) {
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setDatabaseEnabled(true);
-        webView.getSettings().setAppCacheEnabled(true);
-        webView.setWebChromeClient(new WebChromeClient());
         webView.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
     }
 }
