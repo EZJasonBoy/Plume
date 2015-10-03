@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    android:id="@+id/tab_custom_text"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CustomTabTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center"
+    android:paddingLeft="@dimen/smart_tab_padding"
+    android:paddingRight="@dimen/smart_tab_padding"
+    tools:ignore="MissingPrefix"/>

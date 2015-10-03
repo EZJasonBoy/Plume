@@ -16,7 +16,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import sausure.io.plume.R;
-import sausure.io.plume.Retrofit.Entity.ViewPoint;
+import sausure.io.plume.Retrofit.Entity.ViewListItem;
 
 /**
  * Created by JOJO on 2015/9/11.
@@ -24,21 +24,21 @@ import sausure.io.plume.Retrofit.Entity.ViewPoint;
 public class ViewListAdapter extends RecyclerView.Adapter<ViewListAdapter.ViewHolder>
 {
     private Context context;
-    private List<ViewPoint> viewList = new ArrayList<>();
+    private List<ViewListItem> viewList = new ArrayList<>();
 
-    public void addAll(List<ViewPoint> add)
+    public void addAll(List<ViewListItem> add)
     {
         viewList.addAll(add);
         notifyDataSetChanged();
     }
 
-    public void addAllAfterClear(List<ViewPoint> add)
+    public void addAllAfterClear(List<ViewListItem> add)
     {
         viewList.clear();
         addAll(add);
     }
 
-    public List<ViewPoint> getViewPoints()
+    public List<ViewListItem> getViewPoints()
     {
         return viewList;
     }
@@ -79,12 +79,12 @@ public class ViewListAdapter extends RecyclerView.Adapter<ViewListAdapter.ViewHo
             ButterKnife.bind(this,itemView);
         }
 
-        public void bindView(ViewPoint viewPoint)
+        public void bindView(ViewListItem viewListItem)
         {
-            if(viewPoint != null)
+            if(viewListItem != null)
             {
-                textView.setText(viewPoint.getTitle());
-                Picasso.with(context).load(viewPoint.getImages().get(0)).into(imageView);
+                textView.setText(viewListItem.getTitle());
+                Picasso.with(context).load(viewListItem.getImages().get(0)).into(imageView);
             }
         }
     }

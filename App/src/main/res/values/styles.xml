@@ -7,22 +7,46 @@
         <item name="colorAccent">@color/accent</item>
         <item name="divider">@color/divider</item>
         <item name="android:windowBackground">@color/primary_light</item>
+        <item name="android:actionBarStyle">@style/CustomFontActionBar</item>
     </style>
 
     <style name="AppTheme" parent="BaseAppTheme"/>
 
     <style name="DrawerLayoutTheme" parent="AppTheme"/>
 
+    <style name="CustomFontActionBar" parent="Widget.AppCompat.Light.ActionBar">
+        <item name="android:titleTextStyle">@style/CustomTitle</item>
+    </style>
+
+    <style name="CustomTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="fontPath">fonts/Hiragino Sans GB.otf</item>
+    </style>
+
+    <style name="CustomTabTitle">
+        <item name="fontPath">fonts/Hiragino Sans GB.otf</item>
+        <item name="android:textColor">@color/primary_light</item>
+        <item name="android:textSize">@dimen/small_text</item>
+    </style>
+
     <style name="ListItemViewStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/list_view_margin_top</item>
         <item name="android:layout_marginBottom">@dimen/list_item_view_margin</item>
         <item name="android:layout_marginRight">@dimen/list_item_view_margin</item>
         <item name="android:layout_marginLeft">@dimen/list_item_view_margin</item>
         <item name="android:background">@android:color/white</item>
     </style>
 
-    <style name="AppBarTextStyle" parent="@android:style/TextAppearance.DeviceDefault">
-        <item name="android:textSize">20sp</item>
+    <style name="CustomCollapsingTitle" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="fontPath">fonts/Hiragino Sans GB.otf</item>
+    </style>
+
+    <style name="CollapsedTitleText" parent="@style/CustomCollapsingTitle">
+        <item name="android:textSize">@dimen/big_medium_text</item>
+    </style>
+
+    <style name="ExpandedTitleText" parent="@style/CustomCollapsingTitle">
+        <item name="android:textSize">@dimen/large_text</item>
     </style>
 </resources>

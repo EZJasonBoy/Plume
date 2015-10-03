@@ -16,7 +16,7 @@ import rx.schedulers.Schedulers;
 import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.Presenter.ViewDetailPresenter;
 import sausure.io.plume.R;
-import sausure.io.plume.Retrofit.Entity.ViewPoint;
+import sausure.io.plume.Retrofit.Entity.ViewListItem;
 
 /**
  * Created by JOJO on 2015/9/17.
@@ -25,7 +25,7 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
 {
     public static String VIEW_DETAIL = "VIEW_DETAIL";
 
-    private ViewPoint viewPoint;
+    private ViewListItem viewListItem;
 
     @Bind(R.id.image)
     protected ImageView imageView;
@@ -39,8 +39,8 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
     @Override
     protected void onActivityCreated() {
         super.onActivityCreated();
-        collapsingToolbarLayout.setTitle(viewPoint.getTitle());
-        Picasso.with(activity).load(viewPoint.getImages().get(0)).into(imageView);
+        collapsingToolbarLayout.setTitle(viewListItem.getTitle());
+        Picasso.with(activity).load(viewListItem.getImages().get(0)).into(imageView);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
     @Override
     protected void handleBundleExtras(Bundle extras)
     {
-        viewPoint = (ViewPoint) extras.getSerializable(VIEW_DETAIL);
+        viewListItem = (ViewListItem) extras.getSerializable(VIEW_DETAIL);
     }
 
     @Override
@@ -67,8 +67,8 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
     }
 
     @Override
-    public ViewPoint getViewPoint() {
-        return viewPoint;
+    public ViewListItem getViewListItem() {
+        return viewListItem;
     }
 
     @Override

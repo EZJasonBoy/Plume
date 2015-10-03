@@ -13,7 +13,7 @@ public class ViewList
     private String date;
 
     @SerializedName("stories")
-    private List<ViewPoint> stories;
+    private List<ViewListItem> stories;
 
     public String getDate() {
         return date;
@@ -23,11 +23,11 @@ public class ViewList
         this.date = date;
     }
 
-    public List<ViewPoint> getStories() {
+    public List<ViewListItem> getStories() {
         return stories;
     }
 
-    public void setStories(List<ViewPoint> stories) {
+    public void setStories(List<ViewListItem> stories) {
         this.stories = stories;
     }
 }

@@ -17,7 +17,7 @@
             android:dividerHeight="0dp"
             android:fadingEdge="none"
             android:scrollbars="vertical"
-            android:paddingTop="@dimen/view_list_padding_top"/>
+            />
 
     </com.yalantis.phoenix.PullToRefreshView>
 </RelativeLayout>

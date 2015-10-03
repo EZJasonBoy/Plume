@@ -10,6 +10,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import rx.Observable;
 import sausure.io.plume.Retrofit.ZhiHuService;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by JOJO on 2015/9/10.
@@ -19,6 +20,17 @@ public class APP extends Application
     private static OkHttpClient okHttpClient;
 
     private static ZhiHuService zhiHuService;
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/Hiragino Sans GB.otf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build());
+    }
 
     public static OkHttpClient getOkHttpClient()
     {

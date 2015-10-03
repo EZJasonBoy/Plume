@@ -18,12 +18,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginEnd="64dp"
-            app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:collapsedTitleTextAppearance="@style/AppBarTextStyle"
-            app:expandedTitleTextAppearance="@style/AppBarTextStyle">
+            app:contentScrim="?attr/colorPrimary"
+            app:collapsedTitleTextAppearance="@style/CollapsedTitleText"
+            app:expandedTitleTextAppearance="@style/ExpandedTitleText">
 
             <ImageView
                 android:id="@+id/image"

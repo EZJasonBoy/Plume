@@ -24,7 +24,7 @@ import sausure.io.plume.APP;
 import sausure.io.plume.Adapter.ViewListAdapter;
 import sausure.io.plume.R;
 import sausure.io.plume.Retrofit.Entity.ViewList;
-import sausure.io.plume.Retrofit.Entity.ViewPoint;
+import sausure.io.plume.Retrofit.Entity.ViewListItem;
 import sausure.io.plume.Retrofit.ZhiHuService;
 
 /**
@@ -78,7 +78,7 @@ public class ViewPresenter implements Presenter
                 int totalItemCount = layoutManager.getItemCount();
                 if(!isLoading && lastVisibleItem >= totalItemCount - 4 && dy > 0)
                 {
-                    Observable<List<ViewPoint>> observable = LoadBefore();
+                    Observable<List<ViewListItem>> observable = LoadBefore();
 
                     if(observable != null)
                         observable.subscribe(
@@ -112,13 +112,13 @@ public class ViewPresenter implements Presenter
                 {
                     View childView = rv.findChildViewUnder(e.getX(), e.getY());
                     int position = rv.getChildAdapterPosition(childView);
-                    List<ViewPoint> viewPoints = adapter.getViewPoints();
-                    ViewPoint viewPoint = position >= 0 && viewPoints != null && viewPoints.size() > position ?
-                            viewPoints.get(position) : null;
+                    List<ViewListItem> viewListItems = adapter.getViewPoints();
+                    ViewListItem viewListItem = position >= 0 && viewListItems != null && viewListItems.size() > position ?
+                            viewListItems.get(position) : null;
 
                     return childView != null &&
-                            viewPoint != null &&
-                            viewView.onItemClick(childView,viewPoint, position);
+                            viewListItem != null &&
+                            viewView.onItemClick(childView, viewListItem, position);
                 }
                 else
                     return false;
@@ -133,7 +133,7 @@ public class ViewPresenter implements Presenter
         };
     }
 
-    private Observable<List<ViewPoint>> LoadLatest()
+    private Observable<List<ViewListItem>> LoadLatest()
     {
         isLoading = true;
         offset = 0;
@@ -143,7 +143,7 @@ public class ViewPresenter implements Presenter
                 .doOnNext(adapter::addAllAfterClear);
     }
 
-    private Observable<List<ViewPoint>> LoadBefore()
+    private Observable<List<ViewListItem>> LoadBefore()
     {
         isLoading = true;
 
@@ -196,18 +196,18 @@ public class ViewPresenter implements Presenter
     private class ViewModelImpl implements ViewModel
     {
         @Override
-        public Observable<List<ViewPoint>> getLatestViews()
+        public Observable<List<ViewListItem>> getLatestViews()
         {
             return toggleObservable(APP.toggleRetrofitCall(APP.getZhiHuService().getLatestViews()));
         }
 
         @Override
-        public Observable<List<ViewPoint>> getBeforeViews(String date)
+        public Observable<List<ViewListItem>> getBeforeViews(String date)
         {
             return toggleObservable(APP.toggleRetrofitCall(APP.getZhiHuService().getBeforeViews(date)));
         }
 
-        private Observable<List<ViewPoint>> toggleObservable(Observable<ViewList> observable)
+        private Observable<List<ViewListItem>> toggleObservable(Observable<ViewList> observable)
         {
             return observable
                     .subscribeOn(Schedulers.newThread())
@@ -215,20 +215,20 @@ public class ViewPresenter implements Presenter
                     .doOnNext(viewList -> LogUtil.i("View List：" + viewList.getDate()))
                     .map(ViewList::getStories)
                     .doOnNext(viewPoints -> {
-                        for (ViewPoint viewPoint : viewPoints)
-                            if (StringUtil.isBlank(viewPoint.getTitle()) || StringUtil.isBlank(viewPoint.getImages().get(0)))
-                                viewPoints.remove(viewPoint);
+                        for (ViewListItem viewListItem : viewPoints)
+                            if (StringUtil.isBlank(viewListItem.getTitle()) || StringUtil.isBlank(viewListItem.getImages().get(0)))
+                                viewPoints.remove(viewListItem);
                             else
-                                LogUtil.i(viewPoint.toString());
+                                LogUtil.i(viewListItem.toString());
                     });
         }
     }
 
     public interface ViewModel
     {
-        Observable<List<ViewPoint>> getLatestViews();
+        Observable<List<ViewListItem>> getLatestViews();
 
-        Observable<List<ViewPoint>> getBeforeViews(String date);
+        Observable<List<ViewListItem>> getBeforeViews(String date);
     }
 
     public interface ViewView

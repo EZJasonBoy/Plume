@@ -7,8 +7,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import sausure.io.personallibrary.Utils.LogUtil;
 import sausure.io.plume.APP;
-import sausure.io.plume.Retrofit.Entity.ViewPoint;
-import sausure.io.plume.Retrofit.Entity.ViewPointDetail;
+import sausure.io.plume.Retrofit.Entity.ViewListItem;
+import sausure.io.plume.Retrofit.Entity.ViewDetail;
 
 /**
  * Created by JOJO on 2015/9/20.
@@ -27,7 +27,7 @@ public class ViewDetailPresenter implements Presenter
     @Override
     public void initialized()
     {
-        viewDetailModel.getViewPointDetail(viewDetailView.getViewPoint().getId())
+        viewDetailModel.getViewPointDetail(viewDetailView.getViewListItem().getId())
                 .doOnNext(viewPointDetail -> viewDetailView.refreshImage(viewPointDetail.getImage()))
                 .map(this::generateHtml)
                 .map(html -> html.replace("<div class=\"img-place-holder\">", ""))
@@ -38,7 +38,7 @@ public class ViewDetailPresenter implements Presenter
                         });
     }
 
-    private String generateHtml(ViewPointDetail detail)
+    private String generateHtml(ViewDetail detail)
     {
         StringBuilder builder = new StringBuilder();
         String Link = "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">";
@@ -62,7 +62,7 @@ public class ViewDetailPresenter implements Presenter
     private class ViewDetailModelImpl implements ViewDetailModel
     {
         @Override
-        public Observable<ViewPointDetail> getViewPointDetail(int id) {
+        public Observable<ViewDetail> getViewPointDetail(int id) {
             return APP.toggleRetrofitCall(APP.getZhiHuService().getViewPointDetail(id))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread());
@@ -71,12 +71,12 @@ public class ViewDetailPresenter implements Presenter
 
     public interface ViewDetailModel
     {
-        Observable<ViewPointDetail> getViewPointDetail(int id);
+        Observable<ViewDetail> getViewPointDetail(int id);
     }
 
     public interface ViewDetailView
     {
-        ViewPoint getViewPoint();
+        ViewListItem getViewListItem();
         void refreshImage(String imageUrl);
         void initializeWebView(String html);
     }

@@ -5,7 +5,7 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 import sausure.io.plume.Retrofit.Entity.StartImage;
 import sausure.io.plume.Retrofit.Entity.ViewList;
-import sausure.io.plume.Retrofit.Entity.ViewPointDetail;
+import sausure.io.plume.Retrofit.Entity.ViewDetail;
 
 /**
  * Created by JOJO on 2015/9/6.
@@ -31,5 +31,5 @@ public interface ZhiHuService
     Call<ViewList> getBeforeViews(@Path("before")String before);
 
     @GET("news/{id}")
-    Call<ViewPointDetail> getViewPointDetail(@Path("id")int id);
+    Call<ViewDetail> getViewPointDetail(@Path("id")int id);
 }

@@ -1,5 +1,6 @@
 package sausure.io.plume.Activity;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 
@@ -8,6 +9,7 @@ import rx.Observable;
 import sausure.io.personallibrary.Activity.BaseAppCompatActivity;
 import sausure.io.plume.Presenter.Presenter;
 import sausure.io.plume.R;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by JOJO on 2015/9/5.
@@ -22,6 +24,11 @@ public abstract class BaseActivity extends BaseAppCompatActivity
     protected Toolbar toolbar;
 
     protected Presenter presenter;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onActivityCreated()
