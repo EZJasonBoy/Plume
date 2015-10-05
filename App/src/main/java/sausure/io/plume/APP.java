@@ -32,16 +32,14 @@ public class APP extends Application
                         .build());
     }
 
-    public static OkHttpClient getOkHttpClient()
-    {
+    public static OkHttpClient getOkHttpClient() {
         if(okHttpClient == null)
             okHttpClient = new OkHttpClient();
 
         return okHttpClient;
     }
 
-    public static ZhiHuService getZhiHuService()
-    {
+    public static ZhiHuService getZhiHuService() {
         if(zhiHuService == null)
             zhiHuService =  new Retrofit
                                 .Builder()
@@ -60,8 +58,7 @@ public class APP extends Application
      * @param <R>
      * @return
      */
-    public static <R> Observable<R> toggleRetrofitCall(Call<R> call)
-    {
+    public static <R> Observable<R> toggleRetrofitCall(Call<R> call) {
         return Observable.create((subscriber -> {
             try {
                 Response<R> response = call.execute();
@@ -70,13 +67,10 @@ public class APP extends Application
                     throw new Exception("failed to request Network");
 
                 subscriber.onNext(response.body());
-            } catch (Exception e)
-            {
-                e.printStackTrace();
+            } catch (Exception e) {
                 subscriber.onError(e);
             }
-            finally
-            {
+            finally {
                 subscriber.onCompleted();
             }
         }));

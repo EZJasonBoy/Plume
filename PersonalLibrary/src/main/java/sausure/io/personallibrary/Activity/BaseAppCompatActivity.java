@@ -1,16 +1,14 @@
 package sausure.io.personallibrary.Activity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -46,11 +44,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
      * whether can finish
      */
     private boolean canFinish = false;
-
-    /**
-     * post delay runnable
-     */
-    private Runnable toggleFinish = ()-> canFinish = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -136,18 +129,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     public void handleConnectivityChange(NetState netState)
     {
         if(netState == NetState.NONE)
-            getSnackbar().show();
-    }
-
-    /**
-     * bind action to Network setting
-     * @return
-     */
-    private Snackbar getSnackbar()
-    {
-        Snackbar bar = Snackbar.make(contentView, R.string.network_offline, Snackbar.LENGTH_SHORT);
-        bar.setAction(R.string.toggleNetwork, (view -> startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS))));
-        return bar;
+            Toast.makeText(activity,R.string.network_offline,Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -159,8 +141,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
         if(!canFinish)
         {
             canFinish = true;
-            Snackbar.make(contentView,getString(R.string.finish_tip),Snackbar.LENGTH_SHORT).show();
-            new Handler().postDelayed(toggleFinish,2000);
+            Toast.makeText(activity,R.string.finish_tip,Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(()-> canFinish = false,2000);
         }
         else
             finish();
