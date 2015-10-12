@@ -1,7 +1,9 @@
 # Plume `开发中...`
+![](https://github.com/Sausure/Plume/blob/master/App/src/main/res/mipmap-xxhdpi/ic_launcher.png)<br/>
 
 `目前只加入了知乎API，别的栏目正在寻找API`<br/>
 在Android5.0以上可以获得更好的体验，欢迎各位Star！<br/>
+本项目的图标和API均来自网络，如有侵权请告知，多谢！！<br/>
 
 ###使用到的技术
 >[MVP]()`架构`<br/>
