@@ -2,10 +2,9 @@ package sausure.io.plume.Fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-
-import com.yalantis.phoenix.PullToRefreshView;
 
 import java.io.Serializable;
 
@@ -26,7 +25,7 @@ public class ViewFragment extends BaseFragment implements ViewPresenter.ViewView
     RecyclerView viewList;
 
     @Bind(R.id.pull_to_refresh)
-    PullToRefreshView refreshView;
+    SwipeRefreshLayout refreshView;
 
     @Override
     protected Presenter getPresenter() {
@@ -52,13 +51,14 @@ public class ViewFragment extends BaseFragment implements ViewPresenter.ViewView
     }
 
     @Override
-    public void initialRefresh(PullToRefreshView.OnRefreshListener refreshListener)
+    public void initialRefresh(SwipeRefreshLayout.OnRefreshListener refreshListener)
     {
+        refreshView.setColorSchemeColors(R.color.green,R.color.yellow,R.color.red,R.color.blue,R.color.brown);
         refreshView.setOnRefreshListener(refreshListener);
     }
 
     @Override
-    public PullToRefreshView getRefreshView()
+    public SwipeRefreshLayout getRefreshView()
     {
         return refreshView;
     }

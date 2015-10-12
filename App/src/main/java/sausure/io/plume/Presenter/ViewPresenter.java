@@ -2,13 +2,12 @@ package sausure.io.plume.Presenter;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-
-import com.yalantis.phoenix.PullToRefreshView;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -176,7 +175,7 @@ public class ViewPresenter implements Presenter
         return date != null ? date.replace("-","") : null;
     }
 
-    private PullToRefreshView.OnRefreshListener getRefreshListener()
+    private SwipeRefreshLayout.OnRefreshListener getRefreshListener()
     {
         return ()-> {
             if(!isLoading)
@@ -238,9 +237,9 @@ public class ViewPresenter implements Presenter
                          RecyclerView.OnScrollListener onScrollListener,
                          RecyclerView.OnItemTouchListener onItemTouchListener);
 
-        void initialRefresh(PullToRefreshView.OnRefreshListener refreshListener);
+        void initialRefresh(SwipeRefreshLayout.OnRefreshListener refreshListener);
 
-        PullToRefreshView getRefreshView();
+        SwipeRefreshLayout getRefreshView();
 
         boolean onItemClick(View view,Serializable tag, int position);
     }

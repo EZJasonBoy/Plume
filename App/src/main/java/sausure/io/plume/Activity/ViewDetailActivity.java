@@ -40,7 +40,7 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
     protected void onActivityCreated() {
         super.onActivityCreated();
         collapsingToolbarLayout.setTitle(viewListItem.getTitle());
-        Picasso.with(activity).load(viewListItem.getImages().get(0)).into(imageView);
+//        Picasso.with(activity).load(viewListItem.getImages().get(0)).into(imageView);
     }
 
     @Override
@@ -87,6 +87,8 @@ public class ViewDetailActivity extends BaseActivity implements ViewDetailPresen
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(bitmap1 -> bitmap1 != null)
                 .subscribe(imageView::setImageBitmap);
+
+//        Picasso.with(activity).load(imageUrl).into(imageView);
     }
 
     @Override
