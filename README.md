@@ -1,9 +1,13 @@
 # Plume `开发中...`
-###将使用到的技术
+
+`目前只加入了知乎API，别的栏目正在寻找API`<br/>
+在Android5.0以上可以获得更好的体验，欢迎各位Star！<br/>
+
+###使用到的技术
 >[MVP]()`架构`<br/>
 >[SupportDesignLibrary](http://androiddoc.qiniudn.com/tools/support-library/features.html#design)`风格`<br/>
 >[RecyclerView]()`列表`<br/>
->[CardView]()`卡片`<br/>
+>[CardView]()`布局`<br/>
 >[RxAndroid](https://github.com/ReactiveX/RxAndroid)`特性`<br/>
 >[RetroLambda](https://github.com/evant/gradle-retrolambda)`表达式`<br/>
 >[ButterKnife](https://github.com/JakeWharton/butterknife)`注入`<br/>
@@ -13,7 +17,10 @@
 >[Retrofit](https://github.com/square/retrofit)`网络请求`<br/>
 
 ###截图
-![]()
+![](https://github.com/Sausure/Plume/blob/master/picture/first.png)<br/>
+
+
+![](https://github.com/Sausure/Plume/blob/master/picture/second.png)<br/>
 
 ###参考项目
 > **SimplifyReader**
